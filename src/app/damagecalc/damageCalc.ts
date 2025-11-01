@@ -556,6 +556,8 @@ function pbCalcTypeBasedDamageMultipliers(
         { type: type, move: move.move, ability: user.ability },
         { type1: target.types.type1, type2: target.types.type2, ability: target.ability }
     );
+    console.log(process.env.NODE_ENV);
+    console.log("hiiiii");
     multipliers.final_damage_multiplier *= effectiveness;
 
     // TODO: Misc effects like Charge

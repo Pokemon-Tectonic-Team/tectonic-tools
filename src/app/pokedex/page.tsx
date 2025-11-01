@@ -412,7 +412,7 @@ const HomeContent = () => {
                                 {itemDisplayData
                                     .filter((i) =>
                                         itemFilter === "Held"
-                                            ? i.item.isHeldItem
+                                            ? i.item.isHeldItem // i don't have the energy to test if this breaks anything, but we already load held items in TectonicData as an array
                                             : itemFilter == "Wild"
                                             ? i.wildMons.length > 0
                                             : true

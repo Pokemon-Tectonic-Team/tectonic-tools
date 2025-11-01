@@ -16,10 +16,16 @@ export class Item {
     image: string = "";
 
     get isHeldItem() {
+        if (process.env.NODE_ENV === "development") {
+            return (this.pocket >= 9 && this.pocket <= 13);
+        }
         return this.pocket == 5;
     }
 
     get isTM() {
+        if (process.env.NODE_ENV === "development") {
+            return this.pocket == 5;
+        }
         return this.pocket == 4;
     }
 

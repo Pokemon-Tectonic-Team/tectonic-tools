@@ -7,6 +7,7 @@ import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { FasterBoostDamageAbility } from "../abilities/FasterBoostDamageAbility";
 import { ParanoidAbility } from "../abilities/ParanoidAbility";
 import { STABBoostAbility } from "../abilities/STABBoostAbility";
+import { StatModifyAbility } from "../abilities/StatModifyAbility";
 import { TwoItemAbility } from "../abilities/TwoItemAbility";
 import { TypeilateAbility } from "../abilities/TypeilateAbility";
 import { TypeImmunityAbility } from "../abilities/TypeImmunityAbility";
@@ -63,7 +64,6 @@ import { PokemonType } from "./PokemonType";
 import { Trainer } from "./Trainer";
 import { TrainerType } from "./TrainerType";
 import { Tribe } from "./Tribe";
-import { StatModifyAbility } from "../abilities/StatModifyAbility";
 
 const data = loadedData as LoadedDataJson;
 const moveSubclasses = [
@@ -212,4 +212,11 @@ Trainer.NULL = new Trainer();
 
 // Start of post-load population
 Object.entries(TectonicData.forms).forEach(([k, v]) => TectonicData.pokemon[k].addForms([Pokemon.NULL, ...v]));
-TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket == 5);
+
+if (process.env.NODE_ENV === "development") {
+    console.debug("[TectonicData] Running in development mode: including pockets 9-13 as held items");
+    TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => (x.pocket >= 9 && x.pocket <= 13));
+} else {
+    console.debug("[TectonicData] Running in production mode: only pocket 5 as held items");
+    TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket == 5);
+}
