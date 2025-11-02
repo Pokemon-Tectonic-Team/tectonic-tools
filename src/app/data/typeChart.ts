@@ -93,10 +93,10 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData) {
         } else if (atkAbility.id == "EXPERTISE" && defType1Calc * defType2Calc > 1) {
             // only boost super effective hits
             atkAbilityCalc = 1.3;
-        } else if (atkAbility.id == "DRAGONSLAYER" && defType1.id === "DRAGON" || def.type2?.id === "DRAGON") {
+        } else if (atkAbility.id == "DRAGONSLAYER" && (defType1.id === "DRAGON" || def.type2?.id === "DRAGON")) {
             atkAbilityCalc = 2;
         }
-    }
+    }   
 
     const atkMove = atk.move;
     if (atkMove && atkMove.isAttackingMove()) {
