@@ -3,6 +3,7 @@ import { STABBoostAbility } from "../data/abilities/STABBoostAbility";
 import { WeatherImmuneItem } from "../data/items/WeatherImmuneItem";
 import { MultiHitMove } from "../data/moves/MultiHitMove";
 import { Stat } from "../data/tectonic/Pokemon";
+import { TectonicData } from "../data/tectonic/TectonicData";
 import { calcTypeMatchup } from "../data/typeChart";
 import { PartyPokemon } from "../data/types/PartyPokemon";
 import { MoveData } from "./components/MoveCard";
@@ -124,7 +125,8 @@ function calcBasicDamage(
 ): number {
     const pseudoLevel = 15.0 + attackerLevel / 2.0;
     const levelMultiplier = 2.0 + 0.4 * pseudoLevel;
-    return Math.floor(2.0 + (levelMultiplier * baseDamage * userAttackingStat) / targetDefendingStat / 50.0);
+    const core = (levelMultiplier * baseDamage * userAttackingStat) / targetDefendingStat / 50.0;
+    return Math.floor(TectonicData.version.includes("-dev") ? core : 2.0 + core);
 }
 
 function damageCalcStats(move: MoveData, userStats: PartyPokemon, targetStats: PartyPokemon): [number, number] {

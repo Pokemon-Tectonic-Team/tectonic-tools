@@ -22,7 +22,8 @@ export class TypeilateAbility extends MoveTypeChangeAbility {
     }
 
     public movePowerMultiplier(): number {
-        return 1.3;
+        if (this.moveType.id === "NORMAL") return 1.3;
+        return 1;
     }
 
     static abilityIds = Object.keys(typeilateAbilities);
