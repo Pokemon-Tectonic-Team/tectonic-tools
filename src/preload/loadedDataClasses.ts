@@ -432,7 +432,7 @@ export class LoadedEncounter {
 
 export class LoadedEncounterTable {
     type: string;
-    encounterRate?: number;
+    encounterRate?: number | null; // undefined while building json, but becomes null when loaded
     minlevelCap: number = 0;
     normalLevelCap: number = 0;
     encounters: LoadedEncounter[];
