@@ -13,7 +13,7 @@ export abstract class LoadedData<SubClass extends LoadedData<SubClass>> {
         version: string,
         self: T,
         populateMap: Record<string, (version: string, self: T, value: string) => void>,
-        pairs: KVPair[]
+        pairs: KVPair[],
     ): T {
         pairs.forEach((pair) => {
             if (pair.key in populateMap) {
@@ -433,19 +433,30 @@ export class LoadedEncounter {
 export class LoadedEncounterTable {
     type: string;
     encounterRate?: number;
-    levelCap: number = 0;
+    minlevelCap: number = 0;
+    normalLevelCap: number = 0;
     encounters: LoadedEncounter[];
 
-    constructor(raw: RawEncounterTable) {
+    constructor(raw: RawEncounterTable, dev = false) {
         const tableTerms = raw.tableLine.split(",");
+        const terms = tableTerms.length;
 
         this.type = tableTerms[0];
-        if (tableTerms.length > 2) {
+        if (dev && terms > 3) {
             this.encounterRate = parseInt(tableTerms[1]);
-            this.levelCap = parseInt(tableTerms[2]);
-        } else if (tableTerms.length > 1) {
+            this.minlevelCap = parseInt(tableTerms[2]);
+            this.normalLevelCap = parseInt(tableTerms[3]);
+        } else if (dev && terms > 2) {
             // Special encounters only have the level cap
-            this.levelCap = parseInt(tableTerms[1]);
+            this.minlevelCap = parseInt(tableTerms[1]);
+            this.normalLevelCap = parseInt(tableTerms[2]);
+        } else if (terms > 2) {
+            this.encounterRate = parseInt(tableTerms[1]);
+            this.minlevelCap = parseInt(tableTerms[2]);
+            this.normalLevelCap = this.minlevelCap;
+        } else if (terms > 1) {
+            this.minlevelCap = parseInt(tableTerms[1]);
+            this.normalLevelCap = this.minlevelCap;
         }
         this.encounters = raw.encounterSplits.map((x) => new LoadedEncounter(x));
     }
@@ -456,10 +467,10 @@ export class LoadedEncounterMap {
     name: string;
     tables: LoadedEncounterTable[];
 
-    constructor(raw: RawEncounterMap) {
+    constructor(raw: RawEncounterMap, dev = false) {
         this.key = parseInt(raw.mapLine.split("]")[0].slice(1));
         this.name = raw.mapLine.split("#")[1].trim();
-        this.tables = raw.tables.map((x) => new LoadedEncounterTable(x));
+        this.tables = raw.tables.map((x) => new LoadedEncounterTable(x, dev));
     }
 }
 
