@@ -185,7 +185,6 @@ export class PokePartyEncoding {
         const party: PartyPokemon[] = [];
 
         if (view.byteLength >= VERSION_BYTES) {
-            decodeTeam(base64);
             if ((view.getUint8(1) & OLD_CODE_CHECK_MASK) != 0) {
                 // Check at offset 1 because the old format stored the version as a u16.
                 // Since endianess is a thing (this is big endian) that puts our lower byte actually 2nd not first.
