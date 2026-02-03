@@ -372,7 +372,7 @@ async function loadData(dev: boolean = false): Promise<void> {
             (f: string[]) => {
                 const record: Record<string, LoadedEncounterMap> = {};
                 parseEncounterFile(f[0]).forEach((x) => {
-                    const map = new LoadedEncounterMap(x);
+                    const map = new LoadedEncounterMap(x, dev);
                     record[map.key] = map;
                 });
 
