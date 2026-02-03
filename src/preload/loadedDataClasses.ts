@@ -13,7 +13,7 @@ export abstract class LoadedData<SubClass extends LoadedData<SubClass>> {
         version: string,
         self: T,
         populateMap: Record<string, (version: string, self: T, value: string) => void>,
-        pairs: KVPair[],
+        pairs: KVPair[]
     ): T {
         pairs.forEach((pair) => {
             if (pair.key in populateMap) {

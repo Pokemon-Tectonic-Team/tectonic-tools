@@ -396,34 +396,37 @@ async function loadData(dev: boolean = false): Promise<void> {
     // Pre-write setup
     setupPokemonDataForWrite(loadedData.pokemon, loadedData.forms);
 
+    await dataWrite("loadedData.json", loadedData);
     const keys = {
-        pokemon: ["", ...Object.keys(loadedData.pokemon)],
-        item: Object.keys(loadedData.items).filter((k) => {
+        pokemon: Object.keys(loadedData.pokemon),
+        abilities: Object.keys(loadedData.abilities),
+        moves: Object.keys(loadedData.moves),
+        heldItems: Object.keys(loadedData.items).filter((k) => {
             if (dev) {
                 return loadedData.items[k].pocket >= 9 && loadedData.items[k].pocket <= 13;
             }
             return loadedData.items[k].pocket === 5;
         }),
-        type: Object.keys(loadedData.types),
-        move: Object.fromEntries(
-            Object.values(loadedData.pokemon).map((p) => [p.key, LoadedPokemon.getAllMoves(p, stapleMoves)]),
-        ),
-    };
-    const indices = {
-        item: Object.fromEntries(keys.item.map((id, i) => [id, i])),
-        type: Object.fromEntries(Object.keys(loadedData.types).map((id, i) => [id, i])),
-        move: Object.fromEntries(
-            Object.keys(keys.move).map((k) => [k, Object.fromEntries(keys.move[k].map((m, index) => [m, index]))]),
-        ),
+        types: Object.keys(loadedData.types),
     };
 
-    // Write loadedData first
-    await dataWrite("loadedData.json", loadedData);
+    // Write the poke party code mappings seperately as the file is maintained in the repo
+    const mappings = await dataRead("pokePartyMappedEncodings.json");
+    function addNewMappings(tectonicKeys: string[], mappingCategory: string) {
+        const mapping: Record<string, number> = mappings[mappingCategory];
 
-    // Write versions seperately as the file is maintained in the repo
-    const versions = await dataRead("versions.json");
-    versions[version] = { indices, keys };
-    await dataWrite("versions.json", versions);
+        let nextMappingId = Object.keys(mapping).length + 1; // Note - this means mapping ids start at 1, we can use a value of 0 to indicate undefined/null
+        tectonicKeys.forEach((x) => {
+            if (!(x in mapping)) mapping[x] = nextMappingId++;
+        });
+        mappings[mappingCategory] = mapping;
+    }
+    addNewMappings(keys.pokemon, "pokemon");
+    addNewMappings(keys.abilities, "abilities");
+    addNewMappings(keys.moves, "moves");
+    addNewMappings(keys.heldItems, "heldItems");
+    addNewMappings(keys.types, "types");
+    await dataWrite("pokePartyMappedEncodings.json", mappings);
 }
 
 loadData(process.argv[2] === "dev").catch((e) => console.error(e));
