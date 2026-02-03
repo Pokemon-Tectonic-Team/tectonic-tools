@@ -205,7 +205,7 @@ export class PokePartyEncoding {
                     [move2Id, offset] = decodeStringId(view, offset);
                     [move3Id, offset] = decodeStringId(view, offset);
                     [move4Id, offset] = decodeStringId(view, offset);
-                    const form = view.getUint16(offset);
+                    const form = view.getUint8(offset);
                     offset += 1;
 
                     mon.species = TectonicData.pokemon[monId];
@@ -349,14 +349,13 @@ function encodeStringId(id: string, u8s: number[]) {
 
 // Decodes the string id from (num chars (u8)) (u8 value 1, 2, 3...). Returns [id, newOffset]
 function decodeStringId(view: DataView<ArrayBuffer>, offset: number): [string, number] {
-    const numChars = view.getUint8(offset);
-
+    const numChars = view.getUint8(offset++);
     let id = "";
-    for (let i = 0; i < numChars; i++) {
-        id += String.fromCharCode(view.getUint8(offset + i));
-    }
 
-    return [id, offset + numChars + 1];
+    for (let i = 0; i < numChars; i++) {
+        id += String.fromCharCode(view.getUint8(offset++));
+    }
+    return [id, offset];
 }
 
 // Finds the mapping from the mapping file. If the key is undefined 0 is returned
