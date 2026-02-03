@@ -110,8 +110,8 @@ export class PokePartyEncoding {
         versionU16 |= (parseInt(versionSplit[2]) & 0x1f) << VERSION_PATCH_SHIFT;
 
         const data: [number, BytesRequired][] = [
-            [pokePartyEncodingU8, BytesRequired.U8],
             [pokePartyVersionU8, BytesRequired.U8],
+            [pokePartyEncodingU8, BytesRequired.U8],
             [versionU16, BytesRequired.U16],
         ];
         for (const pokemon of party.filter((x) => x.species.id != Pokemon.NULL.id)) {
@@ -185,12 +185,16 @@ export class PokePartyEncoding {
         const party: PartyPokemon[] = [];
 
         if (view.byteLength >= VERSION_BYTES) {
-            if ((view.getUint8(0) & OLD_CODE_CHECK_MASK) != 0) {
+            if ((view.getUint8(1) & OLD_CODE_CHECK_MASK) != 0) {
+                // Check at offset 1 because the old format stored the version as a u16.
+                // Since endianess is a thing (this is big endian) that puts our lower byte actually 2nd not first.
+                // The decode below will handle as the old format and if this path was not taken we don't care about this endianess here
+
                 // TODO: This must be an old code, for now use the old decoder, but eventually we will want to phase these out.
                 return decodeTeam(base64);
             }
 
-            const encoding = ((view.getUint8(0) & ENCODING_MASK) >>> ENCODING_SHIFT) as PokePartyEncodingType;
+            const encoding = ((view.getUint8(1) & ENCODING_MASK) >>> ENCODING_SHIFT) as PokePartyEncodingType;
             let offset = VERSION_BYTES;
             while (offset < view.byteLength) {
                 const mon = new PartyPokemon();
