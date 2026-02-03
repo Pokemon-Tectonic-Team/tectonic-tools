@@ -110,8 +110,8 @@ export class PokePartyEncoding {
         versionU16 |= (parseInt(versionSplit[2]) & 0x1f) << VERSION_PATCH_SHIFT;
 
         const data: [number, BytesRequired][] = [
-            [pokePartyEncodingU8, BytesRequired.U8],
             [pokePartyVersionU8, BytesRequired.U8],
+            [pokePartyEncodingU8, BytesRequired.U8],
             [versionU16, BytesRequired.U16],
         ];
         for (const pokemon of party.filter((x) => x.species.id != Pokemon.NULL.id)) {
@@ -194,7 +194,7 @@ export class PokePartyEncoding {
                 return decodeTeam(base64);
             }
 
-            const encoding = ((view.getUint8(0) & ENCODING_MASK) >>> ENCODING_SHIFT) as PokePartyEncodingType;
+            const encoding = ((view.getUint8(1) & ENCODING_MASK) >>> ENCODING_SHIFT) as PokePartyEncodingType;
             let offset = VERSION_BYTES;
             while (offset < view.byteLength) {
                 const mon = new PartyPokemon();
