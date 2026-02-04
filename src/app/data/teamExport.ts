@@ -114,7 +114,7 @@ function encodeChunk(version: VersionMap, view: DataView<ArrayBuffer>, byteOffse
 
     third_u32 |= getMonMoveShiftValue(2, MOVE3_SHIFT, MOVE3_MASK);
     third_u32 |= getMonMoveShiftValue(3, MOVE4_SHIFT, MOVE4_MASK);
-    third_u32 |= ((data.items.length > 0 ? heldItems[data.items[0].id] ?? -1 : -1) << ITEM1_SHIFT) & ITEM1_MASK;
+    third_u32 |= ((data.items.length > 0 ? (heldItems[data.items[0].id] ?? -1) : -1) << ITEM1_SHIFT) & ITEM1_MASK;
     third_u32 |= (hasSecondItem ? 1 : 0) << FLAG_HAS_2_ITEM_SHIFT;
     third_u32 |= (hasItem1Type ? 1 : 0) << FLAG_HAS_ITEM1_TYPE_SHIFT;
     third_u32 |= (hasForm ? 1 : 0) << FLAG_HAS_FORM_SHIFT;
@@ -145,7 +145,7 @@ export function encodeTeam(party: PartyPokemon[]): string {
     const view = new DataView(new ArrayBuffer(1, { maxByteLength: MAX_TEAM_BYTES }));
 
     const versionSplit = TectonicData.version.replace("dev", "").split(".");
-    let versionU16 = TectonicData.version.includes("-dev") ? VERSION_DEV_MASK : 0;
+    let versionU16 = TectonicData.isDev ? VERSION_DEV_MASK : 0;
     versionU16 |= (parseInt(versionSplit[0]) & 0x1f) << VERSION_MAJOR_SHIFT;
     versionU16 |= (parseInt(versionSplit[1]) & 0x1f) << VERSION_MINOR_SHIFT;
     versionU16 |= (parseInt(versionSplit[2]) & 0x1f) << VERSION_PATCH_SHIFT;
@@ -166,7 +166,7 @@ const decodeChunk = (
     version: VersionMap,
     view: DataView<ArrayBuffer>,
     byteOffset: number,
-    party: PartyPokemon[]
+    party: PartyPokemon[],
 ): number => {
     const mon = new PartyPokemon();
 

@@ -144,6 +144,7 @@ function fromLoadedArray<L extends LoadedData<L>, T>(load: Record<string, L[]>, 
 
 type TectonicDataType = {
     version: string;
+    isDev: boolean;
     types: Record<string, PokemonType>;
     tribes: Record<string, Tribe>;
     abilities: Record<string, Ability>;
@@ -166,6 +167,7 @@ type TectonicDataType = {
 // To this end, the data not in-line loaded with TectonicData (left as {}) is done that way because it requires TectonicData to be instanciated first to populate
 export const TectonicData: TectonicDataType = {
     version: data.version,
+    isDev: data.version.includes("-dev"),
     types: fromLoaded(data.types, PokemonType),
     tribes: fromLoaded(data.tribes, Tribe),
     trainerTypes: fromLoaded(data.trainerTypes, TrainerType),
@@ -217,7 +219,7 @@ Trainer.NULL = new Trainer();
 
 // Start of post-load population
 Object.entries(TectonicData.forms).forEach(([k, v]) => TectonicData.pokemon[k].addForms([Pokemon.NULL, ...v]));
-if (TectonicData.version.includes("-dev")) {
+if (TectonicData.isDev) {
     TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket >= 9 && x.pocket <= 13);
 } else {
     TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket == 5);
