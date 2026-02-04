@@ -1,8 +1,10 @@
-import { PokePartyEncoding } from "@/app/data/pokeparty";
+import { PokePartyEncoding, PokePartyEncodingType } from "@/app/data/pokeparty";
 import { Pokemon } from "@/app/data/tectonic/Pokemon";
+import { TectonicData } from "@/app/data/tectonic/TectonicData";
 import { PartyPokemon } from "@/app/data/types/PartyPokemon";
 import { JSX, useCallback, useEffect, useState } from "react";
 import BasicButton from "./BasicButton";
+import DownloadFileButton from "./DownloadFileButton";
 
 const teamManagementLocalStorageKeyV1 = "TeamManagementLocalStorageKey_V1";
 const pokePartyLocalStorageV1 = "PokePartyLocalStorageKey_V1";
@@ -127,6 +129,14 @@ export default function SavedTeamManager({
                 <div className="flex gap-2">
                     <BasicButton onClick={() => importTeam(teamCode)}>Import</BasicButton>
                     {exportMons && <BasicButton onClick={exportTeam}>Export</BasicButton>}
+                    {TectonicData.isDev && exportMons && (
+                        <DownloadFileButton
+                            filename="teamcode.txt"
+                            generateContent={() => PokePartyEncoding.encode(exportMons!, PokePartyEncodingType.Full)}
+                        >
+                            Export for Tectonic
+                        </DownloadFileButton>
+                    )}
                 </div>
             </div>
 

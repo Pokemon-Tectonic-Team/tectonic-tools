@@ -104,7 +104,7 @@ export class PokePartyEncoding {
         const pokePartyEncodingU8 = encoding << ENCODING_SHIFT;
         const pokePartyVersionU8 = POKE_PARTY_FORMAT_VERSION;
         const versionSplit = TectonicData.version.replace("dev", "").split(".");
-        let versionU16 = TectonicData.version.includes("-dev") ? VERSION_DEV_MASK : 0;
+        let versionU16 = TectonicData.isDev ? VERSION_DEV_MASK : 0;
         versionU16 |= (parseInt(versionSplit[0]) & 0x1f) << VERSION_MAJOR_SHIFT;
         versionU16 |= (parseInt(versionSplit[1]) & 0x1f) << VERSION_MINOR_SHIFT;
         versionU16 |= (parseInt(versionSplit[2]) & 0x1f) << VERSION_PATCH_SHIFT;
