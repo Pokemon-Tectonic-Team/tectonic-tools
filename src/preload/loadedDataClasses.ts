@@ -336,6 +336,7 @@ export class LoadedTrainer extends LoadedData<LoadedTrainer> {
     policies: string[] = [];
     flags: string[] = [];
     pokemon: LoadedTrainerPokemon[] = [];
+    removePokemon?: string[]; // Pokemon IDs to remove from extended team (format: "SPECIES,LEVEL")
     currentPokemon: LoadedTrainerPokemon = new LoadedTrainerPokemon(); //Processing only
 
     static populateMap: Record<string, (version: string, self: LoadedTrainer, value: string) => void> = {};
@@ -375,6 +376,7 @@ export class LoadedTrainer extends LoadedData<LoadedTrainer> {
         this.populateMap["ItemType"] = (_, self, value) => (self.currentPokemon.itemType = value);
         this.populateMap["EV"] = (_, self, value) =>
             (self.currentPokemon.sp = value.split(",").map((v) => parseInt(v)));
+        this.populateMap["RemovePokemon"] = (_, self, value) => (self.removePokemon ??= []).push(value);
         this.populateMap[LoadedData.completedLoading] = (_, self) => {
             // Add last pokemon to array after processing completes
             if (self.currentPokemon.id !== "") {

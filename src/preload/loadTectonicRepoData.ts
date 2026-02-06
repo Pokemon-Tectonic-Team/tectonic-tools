@@ -192,13 +192,21 @@ function propagateTrainerData(trainers: Record<string, LoadedTrainer>): void {
                 throw new Error("Undefined extended trainer " + key + "!");
             }
             trainers[trainerId].flags = extendedTrainer.flags.concat(trainers[trainerId].flags);
-            const updatedPokemon = [...extendedTrainer.pokemon];
+
+            // Build set of pokemon to remove (format: "SPECIES,LEVEL")
+            const removeSet = new Set(trainers[trainerId].removePokemon ?? []);
+
+            // Start with extended trainer's pokemon, filtering out any that should be removed
+            const updatedPokemon = extendedTrainer.pokemon.filter(
+                (p) => !removeSet.has(`${p.id},${p.level}`),
+            );
+
             for (const pokemon of trainers[trainerId].pokemon) {
-                const extendedPokemonIndex = extendedTrainer.pokemon.findIndex((p) => p.id === pokemon.id);
+                const extendedPokemonIndex = updatedPokemon.findIndex((p) => p.id === pokemon.id);
                 if (extendedPokemonIndex === -1) {
                     updatedPokemon.push(pokemon);
                 } else {
-                    const newPokemon = { ...extendedTrainer.pokemon[extendedPokemonIndex] };
+                    const newPokemon = { ...updatedPokemon[extendedPokemonIndex] };
                     if (pokemon.abilityIndex) {
                         newPokemon.abilityIndex = pokemon.abilityIndex;
                     }
