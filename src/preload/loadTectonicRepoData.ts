@@ -201,12 +201,17 @@ function propagateTrainerData(trainers: Record<string, LoadedTrainer>): void {
                 (p) => !removeSet.has(`${p.id},${p.level}`),
             );
 
-            for (const pokemon of trainers[trainerId].pokemon) {
-                const extendedPokemonIndex = updatedPokemon.findIndex((p) => p.id === pokemon.id);
-                if (extendedPokemonIndex === -1) {
+            // Separate pokemon with positions from those without
+            const positionedPokemon = trainers[trainerId].pokemon.filter((p) => p.position !== undefined);
+            const unpositionedPokemon = trainers[trainerId].pokemon.filter((p) => p.position === undefined);
+
+            // First, process unpositioned pokemon (merge with existing or append)
+            for (const pokemon of unpositionedPokemon) {
+                const existingIndex = updatedPokemon.findIndex((p) => p.id === pokemon.id);
+                if (existingIndex === -1) {
                     updatedPokemon.push(pokemon);
                 } else {
-                    const newPokemon = { ...updatedPokemon[extendedPokemonIndex] };
+                    const newPokemon = { ...updatedPokemon[existingIndex] };
                     if (pokemon.abilityIndex) {
                         newPokemon.abilityIndex = pokemon.abilityIndex;
                     }
@@ -222,9 +227,22 @@ function propagateTrainerData(trainers: Record<string, LoadedTrainer>): void {
                     if (pokemon.sp.length > 0) {
                         newPokemon.sp = pokemon.sp;
                     }
-                    updatedPokemon[extendedPokemonIndex] = newPokemon;
+                    if (pokemon.name) {
+                        newPokemon.name = pokemon.name;
+                    }
+                    if (pokemon.gender) {
+                        newPokemon.gender = pokemon.gender;
+                    }
+                    updatedPokemon[existingIndex] = newPokemon;
                 }
             }
+
+            // Then, insert positioned pokemon at their specified positions (sorted by position)
+            positionedPokemon.sort((a, b) => a.position! - b.position!);
+            for (const pokemon of positionedPokemon) {
+                updatedPokemon.splice(pokemon.position!, 0, pokemon);
+            }
+
             trainers[trainerId].pokemon = updatedPokemon;
         }
     }

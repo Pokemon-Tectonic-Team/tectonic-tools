@@ -324,6 +324,7 @@ export class LoadedTrainerPokemon {
     items: string[] = [];
     itemType?: string;
     sp: number[] = [];
+    position?: number; // Target position in team for extended trainers
 }
 
 export class LoadedTrainer extends LoadedData<LoadedTrainer> {
@@ -376,6 +377,7 @@ export class LoadedTrainer extends LoadedData<LoadedTrainer> {
         this.populateMap["ItemType"] = (_, self, value) => (self.currentPokemon.itemType = value);
         this.populateMap["EV"] = (_, self, value) =>
             (self.currentPokemon.sp = value.split(",").map((v) => parseInt(v)));
+        this.populateMap["Position"] = (_, self, value) => (self.currentPokemon.position = parseInt(value));
         this.populateMap["RemovePokemon"] = (_, self, value) => (self.removePokemon ??= []).push(value);
         this.populateMap[LoadedData.completedLoading] = (_, self) => {
             // Add last pokemon to array after processing completes
