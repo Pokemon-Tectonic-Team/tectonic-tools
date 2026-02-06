@@ -41,6 +41,7 @@ const PokemonDamageCalculator: NextPage = () => {
     const [showTeamSearch, setShowTeamSearch] = useState<boolean>(false);
     const [showOpponentSearch, setShowOpponentSearch] = useState<boolean>(false);
     const [loadedParty, setLoadedParty] = useState<PartyPokemon[]>([]);
+    const [loadedOpponentParty, setLoadedOpponentParty] = useState<PartyPokemon[]>([]);
     const [trainerText, setTrainerText] = useState<string>("");
     const [trainer, setTrainer] = useState<Trainer>(Trainer.NULL);
     const [playerMon, setPlayerMon] = useState<PartyPokemon | null>(null);
@@ -79,6 +80,24 @@ const PokemonDamageCalculator: NextPage = () => {
             weather: cancelWeather ? "None" : weather,
             sideState,
         };
+    }
+
+    function handleMonUpdate(
+        currentMon: PartyPokemon,
+        party: PartyPokemon[],
+        setMon: (mon: PartyPokemon) => void,
+        setParty: (party: PartyPokemon[]) => void,
+    ) {
+        const newMon = new PartyPokemon(currentMon);
+        const oldIndex = party.findIndex((x) => x == currentMon);
+        const newParty = [...party];
+        if (oldIndex == -1 && newParty.length < 6) {
+            newParty.push(newMon);
+        } else {
+            newParty[oldIndex] = newMon;
+        }
+        setMon(newMon);
+        setParty(newParty);
     }
 
     useEffect(() => {
@@ -145,19 +164,9 @@ const PokemonDamageCalculator: NextPage = () => {
                             <Fragment>
                                 <PokemonCardHorizontal
                                     partyMon={playerMon}
-                                    onUpdate={() => {
-                                        const newMon = new PartyPokemon(playerMon);
-                                        const oldIndex = loadedParty.findIndex((x) => x == playerMon);
-                                        const newLoadedParty = [...loadedParty];
-                                        if (oldIndex == -1 && newLoadedParty.length < 6) {
-                                            newLoadedParty.push(newMon);
-                                        } else {
-                                            newLoadedParty[oldIndex] = newMon;
-                                        }
-
-                                        setPlayerMon(newMon);
-                                        setLoadedParty(newLoadedParty);
-                                    }}
+                                    onUpdate={() =>
+                                        handleMonUpdate(playerMon, loadedParty, setPlayerMon, setLoadedParty)
+                                    }
                                     onRemove={() => {
                                         setLoadedParty(loadedParty.filter((r) => r != playerMon));
                                         setPlayerMon(null);
@@ -263,10 +272,16 @@ const PokemonDamageCalculator: NextPage = () => {
                             <Fragment>
                                 <PokemonCardHorizontal
                                     partyMon={opponentMon}
-                                    onUpdate={() => {
-                                        setOpponentMon(new PartyPokemon(opponentMon));
-                                    }}
+                                    onUpdate={() =>
+                                        handleMonUpdate(
+                                            opponentMon,
+                                            loadedOpponentParty,
+                                            setOpponentMon,
+                                            setLoadedOpponentParty,
+                                        )
+                                    }
                                     onRemove={() => {
+                                        setLoadedOpponentParty(loadedOpponentParty.filter((r) => r != opponentMon));
                                         setOpponentMon(null);
                                     }}
                                     showBattleConfig={true}
@@ -296,6 +311,36 @@ const PokemonDamageCalculator: NextPage = () => {
                                 )}
                             </Fragment>
                         )}
+                        {opponentMon != null &&
+                            loadedOpponentParty.find((x) => x == opponentMon) == undefined &&
+                            loadedOpponentParty.length < 6 && (
+                                <BasicButton
+                                    onClick={() => {
+                                        if (loadedOpponentParty.length < 6) {
+                                            setLoadedOpponentParty([...loadedOpponentParty, opponentMon]);
+                                        }
+                                    }}
+                                >
+                                    Add To Team
+                                </BasicButton>
+                            )}
+                        <div className="w-fit h-fit overflow-auto mx-auto">
+                            <div className="flex flex-wrap items-center mx-auto">
+                                {loadedOpponentParty.map((x, index) => (
+                                    <ImageFallback
+                                        key={`${x.species.id}-${index}`}
+                                        className="hover:bg-yellow-highlight cursor-pointer"
+                                        src={x.species.getIcon()}
+                                        alt={x.species.name}
+                                        width={64}
+                                        height={64}
+                                        title={x.species.name}
+                                        onClick={() => setOpponentMon(x)}
+                                        onContextMenu={() => setModalMon(x.species)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                         <div className="w-fit h-fit overflow-auto mx-auto">
                             <div className="flex flex-wrap items-center mx-auto">
                                 {trainer != Trainer.NULL && (
