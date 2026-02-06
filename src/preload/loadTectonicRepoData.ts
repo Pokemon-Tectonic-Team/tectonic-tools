@@ -227,6 +227,9 @@ function propagateTrainerData(trainers: Record<string, LoadedTrainer>): void {
                     if (pokemon.sp.length > 0) {
                         newPokemon.sp = pokemon.sp;
                     }
+                    if (pokemon.form !== undefined) {
+                        newPokemon.form = pokemon.form;
+                    }
                     if (pokemon.name) {
                         newPokemon.name = pokemon.name;
                     }

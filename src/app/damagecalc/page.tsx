@@ -318,7 +318,7 @@ const PokemonDamageCalculator: NextPage = () => {
                                     <ImageFallback
                                         key={`${x.pokemon.id}-${index}`}
                                         className={`hover:bg-yellow-highlight cursor-pointer`}
-                                        src={x.pokemon.getIcon()}
+                                        src={x.pokemon.getIcon(x.form)}
                                         alt={x.pokemon.name}
                                         width={64}
                                         height={64}
@@ -327,6 +327,7 @@ const PokemonDamageCalculator: NextPage = () => {
                                             setOpponentMon(
                                                 new PartyPokemon({
                                                     species: x.pokemon,
+                                                    form: x.form,
                                                     level: x.level,
                                                     stylePoints: x.sp,
                                                     moves: [...x.moves],

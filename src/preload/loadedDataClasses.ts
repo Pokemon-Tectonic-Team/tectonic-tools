@@ -317,6 +317,7 @@ export class LoadedTrainerType extends LoadedData<LoadedTrainerType> {
 export class LoadedTrainerPokemon {
     id: string = "";
     level: number = 0;
+    form?: number;
     name?: string;
     gender?: string;
     moves: string[] = [];
@@ -368,6 +369,7 @@ export class LoadedTrainer extends LoadedData<LoadedTrainer> {
         };
         this.populateMap["Name"] = (_, self, value) => (self.currentPokemon.name = value);
         this.populateMap["Gender"] = (_, self, value) => (self.currentPokemon.gender = value);
+        this.populateMap["Form"] = (_, self, value) => (self.currentPokemon.form = parseInt(value));
         this.populateMap["Moves"] = (_, self, value) => (self.currentPokemon.moves = value.split(","));
         this.populateMap["AbilityIndex"] = (_, self, value) => (self.currentPokemon.abilityIndex = parseInt(value));
         this.populateMap["Item"] = (_, self, value) =>
