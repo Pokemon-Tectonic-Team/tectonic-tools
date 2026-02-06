@@ -30,7 +30,7 @@ export default function DefTotalCell({
 }): React.ReactNode {
     const num = cards.filter((c) =>
         calcCompare(
-            calcTypeMatchup({ type: type }, { type1: c.types.type1, type2: c.types.type2, ability: c.ability }),
+            calcTypeMatchup({ type: type }, { type1: c.types.type1, type2: c.types.type2, abilities: c.getActiveAbilities() }),
             compare
         )
     ).length;

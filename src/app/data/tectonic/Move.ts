@@ -156,7 +156,7 @@ export class Move {
         return this.type &&
             (mon.types.type1 === this.type ||
                 mon.types.type2 === this.type ||
-                (mon.ability instanceof ExtraTypeAbility && mon.ability.extraType.id === this.type.id));
+                mon.getActiveAbilities().some((a) => a instanceof ExtraTypeAbility && a.extraType.id === this.type.id));
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -168,8 +168,11 @@ export class Move {
     // to be extended by subclasses
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public getType(user: PartyPokemon, battleState: BattleState): PokemonType {
-        if (user.ability instanceof MoveTypeChangeAbility && user.ability.shouldChangeType(this)) {
-            return user.ability.moveType;
+        // Check all active abilities for type-changing effects (supports Fragile Locket)
+        for (const ability of user.getActiveAbilities()) {
+            if (ability instanceof MoveTypeChangeAbility && ability.shouldChangeType(this)) {
+                return ability.moveType;
+            }
         }
         return this.type;
     }

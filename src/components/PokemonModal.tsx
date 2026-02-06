@@ -91,14 +91,14 @@ const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector,
                 {
                     type1: currentPokemon.getType1(currentForm),
                     type2: currentPokemon.getType2(currentForm),
-                    ability: a,
+                    abilities: [a],
                 },
             );
 
             stabMatchupCalcs[a.id][t.id] = Math.max(
-                calcTypeMatchup({ type: currentPokemon.getType1(currentForm), ability: a }, { type1: t }),
+                calcTypeMatchup({ type: currentPokemon.getType1(currentForm), abilities: [a] }, { type1: t }),
                 calcTypeMatchup(
-                    { type: currentPokemon.getType2(currentForm) || currentPokemon.getType1(currentForm), ability: a },
+                    { type: currentPokemon.getType2(currentForm) || currentPokemon.getType1(currentForm), abilities: [a] },
                     { type1: t },
                 ),
             );
