@@ -764,6 +764,9 @@ function calcDamageMultipliers(
     multipliers.final_damage_multiplier *= 0.9;
     //}
 
+    // Custom damage multiplier for simulating unsupported effects
+    multipliers.final_damage_multiplier *= battleState.sideState.customDamageMultiplier;
+
     // TODO: Move-specific final damage modifiers
     //multipliers.final_damage_multiplier = pbModifyDamage(multipliers.final_damage_multiplier, user, target);
     return [multipliers, typeEffectMult];
