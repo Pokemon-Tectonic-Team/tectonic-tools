@@ -212,7 +212,7 @@ function propagateTrainerData(trainers: Record<string, LoadedTrainer>): void {
                     updatedPokemon.push(pokemon);
                 } else {
                     const newPokemon = { ...updatedPokemon[existingIndex] };
-                    if (pokemon.abilityIndex) {
+                    if (pokemon.abilityIndex !== undefined) {
                         newPokemon.abilityIndex = pokemon.abilityIndex;
                     }
                     if (pokemon.itemType) {
