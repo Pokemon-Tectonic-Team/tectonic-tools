@@ -98,7 +98,7 @@ const TeamBuilder: NextPage = () => {
                                                         {
                                                             type1: c.types.type1,
                                                             type2: c.types.type2,
-                                                            ability: c.ability,
+                                                            abilities: c.getActiveAbilities(),
                                                         }
                                                     )}
                                                 />

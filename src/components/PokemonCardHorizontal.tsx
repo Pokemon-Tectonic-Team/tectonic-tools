@@ -3,6 +3,7 @@
 import { TwoItemAbility } from "@/app/data/abilities/TwoItemAbility";
 import { nullBattleState } from "@/app/data/battleState";
 import { StatusEffect, statusEffects, volatileStatusEffects } from "@/app/data/conditions";
+import { FragileLocketItem } from "@/app/data/items/FragileLocketItem";
 import { TypeChangingItem } from "@/app/data/items/TypeChangingItem";
 import {
     MAX_LEVEL,
@@ -188,6 +189,16 @@ export default function PokemonCardHorizontal({
                                         </option>
                                     ))}
                                 </Dropdown>
+
+                                {partyMon.items.some((i) => i instanceof FragileLocketItem) &&
+                                    partyMon.getSecondaryAbility() && (
+                                        <div
+                                            className="text-sm text-gray-300 px-2 py-1 bg-gray-700 rounded select-none cursor-default text-center"
+                                            title={partyMon.getSecondaryAbility()!.description}
+                                        >
+                                            + {partyMon.getSecondaryAbility()!.name}
+                                        </div>
+                                    )}
 
                                 {Array.from({ length: partyMon.ability instanceof TwoItemAbility ? 2 : 1 }).map(
                                     (_, i) => (

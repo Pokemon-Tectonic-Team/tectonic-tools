@@ -2,6 +2,7 @@ import { MoveData } from "@/app/damagecalc/components/MoveCard";
 import { Side } from "@/app/damagecalc/damageCalc";
 import { TwoItemAbility } from "../abilities/TwoItemAbility";
 import { StatusEffect, VolatileStatusEffect, volatileStatusEffects } from "../conditions";
+import { FragileLocketItem } from "../items/FragileLocketItem";
 import { TypeChangingItem } from "../items/TypeChangingItem";
 import { IgnoreStatMove } from "../moves/IgnoreStatMove";
 import { calculateHP, calculateStat } from "../stats";
@@ -45,6 +46,26 @@ export class PartyPokemon {
             (Object.fromEntries(volatileStatusEffects.map((e) => [e, false])) as Record<VolatileStatusEffect, boolean>);
     }
 
+    public hasFragileLocket(): boolean {
+        return this.items.some((i) => i instanceof FragileLocketItem);
+    }
+
+    public getSecondaryAbility(): Ability | null {
+        const abilities = this.species?.getAbilities?.(this.form) || [];
+        const other = abilities.find((a) => a && a != Ability.NULL && a.id !== this.ability.id);
+        return other || null;
+    }
+
+    public getActiveAbilities(): Ability[] {
+        if (this.hasFragileLocket()) {
+            const secondary = this.getSecondaryAbility();
+            if (secondary) {
+                return [this.ability, secondary];
+            }
+        }
+        return [this.ability];
+    }
+
     // modify base stats separately so they can be shown on the UI
     public getBaseStats(): Stats {
         let stats = this.species.getStats(this.form);
@@ -55,8 +76,9 @@ export class PartyPokemon {
     }
 
     public getStats(move?: MoveData, side?: Side): Stats {
-        const stylish = this.ability.id === "STYLISH";
-        const accumulation = this.ability.id === "ACCUMULATION";
+        const activeAbilities = this.getActiveAbilities();
+        const stylish = activeAbilities.some((a) => a.id === "STYLISH");
+        const accumulation = activeAbilities.some((a) => a.id === "ACCUMULATION");
         const steps = { ...this.statSteps };
         if (move?.criticalHit) {
             // crits ignore player attack drops
@@ -86,8 +108,22 @@ export class PartyPokemon {
 
         let calculatedStats: Stats = {
             hp: calculateHP(stats.hp, this.level, this.stylePoints.hp, stylish, accumulation),
-            attack: calculateStat(stats.attack, this.level, this.stylePoints.attacks, steps.attack, stylish, accumulation),
-            defense: calculateStat(stats.defense, this.level, this.stylePoints.defense, steps.defense, stylish, accumulation),
+            attack: calculateStat(
+                stats.attack,
+                this.level,
+                this.stylePoints.attacks,
+                steps.attack,
+                stylish,
+                accumulation,
+            ),
+            defense: calculateStat(
+                stats.defense,
+                this.level,
+                this.stylePoints.defense,
+                steps.defense,
+                stylish,
+                accumulation,
+            ),
             spatk: calculateStat(stats.spatk, this.level, this.stylePoints.attacks, steps.spatk, stylish, accumulation),
             spdef: calculateStat(stats.spdef, this.level, this.stylePoints.spdef, steps.spdef, stylish, accumulation),
             speed,
@@ -97,7 +133,9 @@ export class PartyPokemon {
             calculatedStats = item.modifyStats(calculatedStats);
         }
 
-        calculatedStats = this.ability.modifyStats(calculatedStats);
+        for (const ability of this.getActiveAbilities()) {
+            calculatedStats = ability.modifyStats(calculatedStats);
+        }
 
         return calculatedStats;
     }

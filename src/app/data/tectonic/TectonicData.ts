@@ -17,6 +17,7 @@ import { TypeWeaknessAbility } from "../abilities/TypeWeaknessAbility";
 import { CategoryBoostingItem } from "../items/CategoryBoostingItem";
 import { EvioliteItem } from "../items/EvioliteItem";
 import { FlatDamageBoostItem } from "../items/FlatDamageBoostItem";
+import { FragileLocketItem } from "../items/FragileLocketItem";
 import { LumberAxeItem } from "../items/LumberAxeItem";
 import { StatBoostItem } from "../items/StatBoostItem";
 import { StatLockItem } from "../items/StatLockItem";
@@ -103,6 +104,7 @@ const itemSubclasses = [
     CategoryBoostingItem,
     EvioliteItem,
     FlatDamageBoostItem,
+    FragileLocketItem,
     LumberAxeItem,
     StatBoostItem,
     StatLockItem,
@@ -111,6 +113,7 @@ const itemSubclasses = [
     TypeBoostingItem,
     TypeChangingItem,
     WeatherImmuneItem,
+    FragileLocketItem,
 ];
 
 const abilitySubclasses = [
