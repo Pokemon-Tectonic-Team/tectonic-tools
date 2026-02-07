@@ -57,6 +57,9 @@ export class PartyPokemon {
     }
 
     public getActiveAbilities(): Ability[] {
+        if (this.statusEffect === "Dizzy") {
+            return [];
+        }
         if (this.hasFragileLocket()) {
             const secondary = this.getSecondaryAbility();
             if (secondary) {
