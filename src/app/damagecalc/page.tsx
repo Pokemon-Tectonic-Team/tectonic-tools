@@ -89,13 +89,8 @@ const PokemonDamageCalculator: NextPage = () => {
         setParty: (party: PartyPokemon[]) => void,
     ) {
         const newMon = new PartyPokemon(currentMon);
-        const oldIndex = party.findIndex((x) => x == currentMon);
         const newParty = [...party];
-        if (oldIndex == -1 && newParty.length < 6) {
-            newParty.push(newMon);
-        } else {
-            newParty[oldIndex] = newMon;
-        }
+        newParty.push(newMon);
         setMon(newMon);
         setParty(newParty);
     }
