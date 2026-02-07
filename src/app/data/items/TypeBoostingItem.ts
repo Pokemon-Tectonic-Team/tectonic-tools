@@ -7,53 +7,56 @@ import { PokemonType } from "../tectonic/PokemonType";
 import { TectonicData } from "../tectonic/TectonicData";
 import { PartyPokemon } from "../types/PartyPokemon";
 
-const itemTypes: Record<string, string> = {
-    CHARCOAL: "FIRE",
-    MYSTICWATER: "WATER",
-    MAGNET: "ELECTRIC",
-    MIRACLESEED: "GRASS",
-    NEVERMELTICE: "ICE",
-    BLACKBELT: "FIGHTING",
-    POISONBARB: "POISON",
-    SOFTSAND: "GROUND",
-    SHARPBEAK: "FLYING",
-    TWISTEDSPOON: "PSYCHIC",
-    SILVERPOWDER: "BUG",
-    HARDSTONE: "ROCK",
-    SPELLTAG: "GHOST",
-    DRAGONFANG: "DRAGON",
-    BLACKGLASSES: "DARK",
-    METALCOAT: "STEEL",
-    SILKSCARF: "NORMAL",
-    FAIRYFEATHER: "FAIRY",
-    FIREGEM: "FIRE",
-    WATERGEM: "WATER",
-    ELECTRICGEM: "ELECTRIC",
-    GRASSGEM: "GRASS",
-    ICEGEM: "ICE",
-    FIGHTINGGEM: "FIGHTING",
-    POISONGEM: "POISON",
-    GROUNDGEM: "GROUND",
-    FLYINGGEM: "FLYING",
-    PSYCHICGEM: "PSYCHIC",
-    BUGGEM: "BUG",
-    ROCKGEM: "ROCK",
-    GHOSTGEM: "GHOST",
-    DRAGONGEM: "DRAGON",
-    DARKGEM: "DARK",
-    STEELGEM: "STEEL",
-    NORMALGEM: "NORMAL",
-    FAIRYGEM: "FAIRY",
+const itemTypes: Record<string, string[]> = {
+    CHARCOAL: ["FIRE"],
+    MYSTICWATER: ["WATER"],
+    MAGNET: ["ELECTRIC"],
+    MIRACLESEED: ["GRASS"],
+    NEVERMELTICE: ["ICE"],
+    BLACKBELT: ["FIGHTING"],
+    POISONBARB: ["POISON"],
+    SOFTSAND: ["GROUND"],
+    SHARPBEAK: ["FLYING"],
+    TWISTEDSPOON: ["PSYCHIC"],
+    SILVERPOWDER: ["BUG"],
+    HARDSTONE: ["ROCK"],
+    SPELLTAG: ["GHOST"],
+    DRAGONFANG: ["DRAGON"],
+    BLACKGLASSES: ["DARK"],
+    METALCOAT: ["STEEL"],
+    SILKSCARF: ["NORMAL"],
+    FAIRYFEATHER: ["FAIRY"],
+    FIREGEM: ["FIRE"],
+    WATERGEM: ["WATER"],
+    ELECTRICGEM: ["ELECTRIC"],
+    GRASSGEM: ["GRASS"],
+    ICEGEM: ["ICE"],
+    FIGHTINGGEM: ["FIGHTING"],
+    POISONGEM: ["POISON"],
+    GROUNDGEM: ["GROUND"],
+    FLYINGGEM: ["FLYING"],
+    PSYCHICGEM: ["PSYCHIC"],
+    BUGGEM: ["BUG"],
+    ROCKGEM: ["ROCK"],
+    GHOSTGEM: ["GHOST"],
+    DRAGONGEM: ["DRAGON"],
+    DARKGEM: ["DARK"],
+    STEELGEM: ["STEEL"],
+    NORMALGEM: ["NORMAL"],
+    FAIRYGEM: ["FAIRY"],
+    ADAMANTORB: ["DRAGON", "STEEL"],
+    LUSTROUSORB: ["DRAGON", "WATER"],
+    GRISEOUSORB: ["DRAGON", "GHOST"],
 };
 
 const itemBoosts: Record<string, number> = {};
 
 export class TypeBoostingItem extends Item {
-    boostedType: PokemonType;
+    boostedTypes: PokemonType[];
     boostMult: number;
     constructor(item: LoadedItem) {
         super(item);
-        this.boostedType = TectonicData.types[itemTypes[item.key]];
+        this.boostedTypes = itemTypes[item.key].map((t) => TectonicData.types[t]);
         // lazy hardcode to avoid writing out each gem individually
         if (item.key.includes("GEM")) {
             this.boostMult = 1.5;
@@ -70,7 +73,7 @@ export class TypeBoostingItem extends Item {
         target: PartyPokemon,
         battleState: BattleState
     ): DamageMultipliers {
-        if (move.move.getType(user, battleState).id === this.boostedType.id) {
+        if (this.boostedTypes.some((t) => move.move.getType(user, battleState).id === t.id)) {
             multipliers.base_damage_multiplier *= this.boostMult;
         }
         return multipliers;
