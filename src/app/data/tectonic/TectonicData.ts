@@ -113,6 +113,7 @@ const itemSubclasses = [
     TypeBoostingItem,
     TypeChangingItem,
     WeatherImmuneItem,
+    FragileLocketItem,
 ];
 
 const abilitySubclasses = [
