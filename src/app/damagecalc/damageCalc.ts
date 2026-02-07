@@ -342,6 +342,20 @@ function pbCalcWeatherDamageMultipliers(
                 multipliers.final_damage_multiplier *= 1 + damageBonus;
             }
             break;
+        case "Sandstorm": {
+            const trueCategory = move.move.getDamageCategory(move, user, target);
+            if (target.hasType("ROCK") && move.move.getDefendingStat(trueCategory) === "spdef") {
+                multipliers.defense_multiplier *= 1.5;
+            }
+            break;
+        }
+        case "Hail": {
+            const trueCategory = move.move.getDamageCategory(move, user, target);
+            if (target.hasType("ICE") && move.move.getDefendingStat(trueCategory) === "defense") {
+                multipliers.defense_multiplier *= 1.5;
+            }
+            break;
+        }
     }
     return multipliers;
 }
