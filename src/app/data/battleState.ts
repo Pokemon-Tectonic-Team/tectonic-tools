@@ -4,12 +4,14 @@ export interface SideState {
     reflect: boolean;
     lightScreen: boolean;
     auroraVeil: boolean;
+    customDamageMultiplier: number;
 }
 
 export const nullSideState: SideState = {
     reflect: false,
     lightScreen: false,
     auroraVeil: false,
+    customDamageMultiplier: 1,
 };
 
 export interface BattleState {
