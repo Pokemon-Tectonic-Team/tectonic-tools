@@ -113,6 +113,10 @@ export class PartyPokemon {
         return { type1: this.species.getType1(this.form), type2: this.species.getType2(this.form) };
     }
 
+    public hasType(typeId: string): boolean {
+        return this.types.type1.id === typeId || this.types.type2?.id === typeId;
+    }
+
     // Only allow selecting items that maintain the legality constraint
     public legalItems(index: number): Item[] {
         if (this.ability instanceof TwoItemAbility) {
