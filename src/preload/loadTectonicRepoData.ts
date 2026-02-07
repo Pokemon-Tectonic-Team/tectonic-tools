@@ -192,14 +192,27 @@ function propagateTrainerData(trainers: Record<string, LoadedTrainer>): void {
                 throw new Error("Undefined extended trainer " + key + "!");
             }
             trainers[trainerId].flags = extendedTrainer.flags.concat(trainers[trainerId].flags);
-            const updatedPokemon = [...extendedTrainer.pokemon];
-            for (const pokemon of trainers[trainerId].pokemon) {
-                const extendedPokemonIndex = extendedTrainer.pokemon.findIndex((p) => p.id === pokemon.id);
-                if (extendedPokemonIndex === -1) {
+
+            // Build set of pokemon to remove (format: "SPECIES,LEVEL")
+            const removeSet = new Set(trainers[trainerId].removePokemon ?? []);
+
+            // Start with extended trainer's pokemon, filtering out any that should be removed
+            const updatedPokemon = extendedTrainer.pokemon.filter(
+                (p) => !removeSet.has(`${p.id},${p.level}`),
+            );
+
+            // Separate pokemon with positions from those without
+            const positionedPokemon = trainers[trainerId].pokemon.filter((p) => p.position !== undefined);
+            const unpositionedPokemon = trainers[trainerId].pokemon.filter((p) => p.position === undefined);
+
+            // First, process unpositioned pokemon (merge with existing or append)
+            for (const pokemon of unpositionedPokemon) {
+                const existingIndex = updatedPokemon.findIndex((p) => p.id === pokemon.id);
+                if (existingIndex === -1) {
                     updatedPokemon.push(pokemon);
                 } else {
-                    const newPokemon = { ...extendedTrainer.pokemon[extendedPokemonIndex] };
-                    if (pokemon.abilityIndex) {
+                    const newPokemon = { ...updatedPokemon[existingIndex] };
+                    if (pokemon.abilityIndex !== undefined) {
                         newPokemon.abilityIndex = pokemon.abilityIndex;
                     }
                     if (pokemon.itemType) {
@@ -214,9 +227,25 @@ function propagateTrainerData(trainers: Record<string, LoadedTrainer>): void {
                     if (pokemon.sp.length > 0) {
                         newPokemon.sp = pokemon.sp;
                     }
-                    updatedPokemon[extendedPokemonIndex] = newPokemon;
+                    if (pokemon.form !== undefined) {
+                        newPokemon.form = pokemon.form;
+                    }
+                    if (pokemon.name) {
+                        newPokemon.name = pokemon.name;
+                    }
+                    if (pokemon.gender) {
+                        newPokemon.gender = pokemon.gender;
+                    }
+                    updatedPokemon[existingIndex] = newPokemon;
                 }
             }
+
+            // Then, insert positioned pokemon at their specified positions (sorted by position)
+            positionedPokemon.sort((a, b) => a.position! - b.position!);
+            for (const pokemon of positionedPokemon) {
+                updatedPokemon.splice(pokemon.position!, 0, pokemon);
+            }
+
             trainers[trainerId].pokemon = updatedPokemon;
         }
     }

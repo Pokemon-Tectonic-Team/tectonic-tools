@@ -317,6 +317,7 @@ export class LoadedTrainerType extends LoadedData<LoadedTrainerType> {
 export class LoadedTrainerPokemon {
     id: string = "";
     level: number = 0;
+    form?: number;
     name?: string;
     gender?: string;
     moves: string[] = [];
@@ -324,6 +325,7 @@ export class LoadedTrainerPokemon {
     items: string[] = [];
     itemType?: string;
     sp: number[] = [];
+    position?: number; // Target position in team for extended trainers
 }
 
 export class LoadedTrainer extends LoadedData<LoadedTrainer> {
@@ -336,6 +338,7 @@ export class LoadedTrainer extends LoadedData<LoadedTrainer> {
     policies: string[] = [];
     flags: string[] = [];
     pokemon: LoadedTrainerPokemon[] = [];
+    removePokemon?: string[]; // Pokemon IDs to remove from extended team (format: "SPECIES,LEVEL")
     currentPokemon: LoadedTrainerPokemon = new LoadedTrainerPokemon(); //Processing only
 
     static populateMap: Record<string, (version: string, self: LoadedTrainer, value: string) => void> = {};
@@ -366,6 +369,7 @@ export class LoadedTrainer extends LoadedData<LoadedTrainer> {
         };
         this.populateMap["Name"] = (_, self, value) => (self.currentPokemon.name = value);
         this.populateMap["Gender"] = (_, self, value) => (self.currentPokemon.gender = value);
+        this.populateMap["Form"] = (_, self, value) => (self.currentPokemon.form = parseInt(value));
         this.populateMap["Moves"] = (_, self, value) => (self.currentPokemon.moves = value.split(","));
         this.populateMap["AbilityIndex"] = (_, self, value) => (self.currentPokemon.abilityIndex = parseInt(value));
         this.populateMap["Item"] = (_, self, value) =>
@@ -375,6 +379,8 @@ export class LoadedTrainer extends LoadedData<LoadedTrainer> {
         this.populateMap["ItemType"] = (_, self, value) => (self.currentPokemon.itemType = value);
         this.populateMap["EV"] = (_, self, value) =>
             (self.currentPokemon.sp = value.split(",").map((v) => parseInt(v)));
+        this.populateMap["Position"] = (_, self, value) => (self.currentPokemon.position = parseInt(value));
+        this.populateMap["RemovePokemon"] = (_, self, value) => (self.removePokemon ??= []).push(value);
         this.populateMap[LoadedData.completedLoading] = (_, self) => {
             // Add last pokemon to array after processing completes
             if (self.currentPokemon.id !== "") {
