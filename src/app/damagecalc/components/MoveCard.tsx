@@ -142,7 +142,7 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                                     type="checkbox"
                                     checked={crit}
                                     className="form-checkbox ml-1"
-                                    disabled={props.target.volatileStatusEffects.Jinx}
+                                    disabled={props.moveData.move.alwaysCrits() || props.target.volatileStatusEffects.Jinx}
                                     onChange={() => {
                                         setCrit(!crit);
                                         props.moveData.criticalHit = !crit;

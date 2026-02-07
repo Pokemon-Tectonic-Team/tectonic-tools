@@ -91,7 +91,7 @@ const PokemonDamageCalculator: NextPage = () => {
                           return {
                               move: x,
                               customVar: oldMoveData?.customVar,
-                              criticalHit: oldMoveData?.criticalHit ?? false,
+                              criticalHit: x.alwaysCrits() || (oldMoveData?.criticalHit ?? false),
                           };
                       })
                 : [];

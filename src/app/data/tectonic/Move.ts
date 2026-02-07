@@ -217,6 +217,10 @@ export class Move {
         return "player";
     }
 
+    public alwaysCrits(): boolean {
+        return false;
+    }
+
     public getCriticalMultiplier(): number {
         return 1.5;
     }
