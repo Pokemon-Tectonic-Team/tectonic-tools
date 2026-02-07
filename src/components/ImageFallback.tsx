@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 // Keep adding fallbacks till we can serve everyone for free?
 const IMG_SIRV_ROOT = "https://tectonictools.sirv.com/Images/public";
@@ -34,6 +34,11 @@ export default function ImageFallback({
 }): ReactNode {
     const [sourceState, setSourceState] = useState<ImageSourceState>(ImageSourceState.Vercel);
     const isDev = process.env.NODE_ENV !== "production";
+
+    // Reset source state when src changes so we don't stay in error state
+    useEffect(() => {
+        setSourceState(ImageSourceState.Vercel);
+    }, [src]);
 
     function toNextSourceState() {
         // On dev return immediately while staying in the error state
