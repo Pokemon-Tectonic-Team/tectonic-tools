@@ -35,7 +35,7 @@ export class Ability {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public movePowerMultiplier(move: MoveData, user: PartyPokemon, target: PartyPokemon): number {
+    public movePowerMultiplier(move: MoveData, user: PartyPokemon, target: PartyPokemon, battleState: BattleState): number {
         return 1;
     }
 

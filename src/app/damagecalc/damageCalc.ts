@@ -187,7 +187,7 @@ function pbCalcAbilityDamageMultipliers(
 
     // User or user ally ability effects that alter damage (apply all active abilities for Fragile Locket)
     for (const ability of user.getActiveAbilities()) {
-        multipliers.base_damage_multiplier *= ability.movePowerMultiplier(move, user, target);
+        multipliers.base_damage_multiplier *= ability.movePowerMultiplier(move, user, target, battleState);
         multipliers.attack_multiplier *= ability.attackMultiplier(move, user, battleState);
     }
     // user.eachAlly((b: any) => {

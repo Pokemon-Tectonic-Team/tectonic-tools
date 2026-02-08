@@ -6,6 +6,7 @@ import { CancelWeatherAbility } from "../abilities/CancelWeatherAbility";
 import { DefensiveDamageAbility } from "../abilities/DefensiveDamageAbility";
 import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { FasterBoostDamageAbility } from "../abilities/FasterBoostDamageAbility";
+import { OffensiveDamageBoostAbility } from "../abilities/OffensiveDamageBoostAbility";
 import { ParanoidAbility } from "../abilities/ParanoidAbility";
 import { STABBoostAbility } from "../abilities/STABBoostAbility";
 import { StatModifyAbility } from "../abilities/StatModifyAbility";
@@ -127,6 +128,7 @@ const abilitySubclasses = [
     DefensiveDamageAbility,
     ExtraTypeAbility,
     FasterBoostDamageAbility,
+    OffensiveDamageBoostAbility,
     ParanoidAbility,
     STABBoostAbility,
     StatModifyAbility,
