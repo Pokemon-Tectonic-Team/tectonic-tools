@@ -109,6 +109,7 @@ export class Move {
     bypassesProtect: boolean = false;
     hitsFliers: boolean = false;
     ignoresScreens: boolean = false;
+    ignoresTargetAbility: boolean = false;
     criticalMultiplier: number = 1.5;
 
     public getTargetPositions(): boolean[][] {

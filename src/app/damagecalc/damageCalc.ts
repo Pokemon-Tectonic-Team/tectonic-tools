@@ -734,9 +734,13 @@ function calcDamageMultipliers(
         multipliers = item.defensiveMultiplier(multipliers, move, user, target, battleState, typeEffectMult);
     }
 
-    // Target ability effects that reduce damage
-    for (const ability of target.getActiveAbilities()) {
-        multipliers.final_damage_multiplier *= ability.defensiveMultiplier(move, user, target, battleState, typeEffectMult);
+    // Target ability effects that reduce damage (skipped if attacker ignores target ability)
+    const moldBreaking = move.move.ignoresTargetAbility ||
+        user.getActiveAbilities().some((a) => a.flags.includes("MoldBreaking"));
+    if (!moldBreaking) {
+        for (const ability of target.getActiveAbilities()) {
+            multipliers.final_damage_multiplier *= ability.defensiveMultiplier(move, user, target, battleState, typeEffectMult);
+        }
     }
 
     // TODO: Misc effects

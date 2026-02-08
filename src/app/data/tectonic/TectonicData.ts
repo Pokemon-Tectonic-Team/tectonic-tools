@@ -118,6 +118,7 @@ const moveModifiers: Array<{ moveCodes: string[]; apply: (move: Move) => void }>
     { moveCodes: ["RemoveScreens"], apply: (m) => { m.ignoresScreens = true; } },
     { moveCodes: ["HitsTargetInSkyGroundsTarget"], apply: (m) => { m.hitsFliers = true; } },
     { moveCodes: ["DoubleDamageOnCrit"], apply: (m) => { m.criticalMultiplier = 3; } },
+    { moveCodes: ["IgnoreTargetAbility"], apply: (m) => { m.ignoresTargetAbility = true; } },
 ];
 const itemSubclasses = [
     CategoryBoostingItem,
