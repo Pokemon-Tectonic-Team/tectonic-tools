@@ -34,6 +34,14 @@ export function calculateDamage(
     //     return;
     // }
 
+    // Fixed damage moves bypass the entire formula
+    const fixedDamage = move.move.getFixedDamage(user, target, battleState, move.customVar);
+    if (fixedDamage !== null) {
+        const hp = target.getStats(move, "opponent", battleState).hp;
+        const percentage = fixedDamage / hp;
+        return { damage: fixedDamage, percentage, hits: Math.ceil(1 / percentage), typeEffectMult: 1 };
+    }
+
     // Calculate base power of move
     const baseDmg = move.move.getPower(user, target, battleState, move.customVar);
 

@@ -165,6 +165,18 @@ export class Move {
         return this.bp;
     }
 
+    // Override in subclasses to bypass the damage formula and return a fixed damage value
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public getFixedDamage(user: PartyPokemon, target: PartyPokemon, battleState: BattleState, customVar: unknown): number | null {
+        return null;
+    }
+
+    // Override in subclasses to provide context-aware default values for customVar
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public getDefaultCustomVar(user: PartyPokemon, target: PartyPokemon, battleState: BattleState): unknown {
+        return undefined;
+    }
+
     // to be extended by subclasses
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public getType(user: PartyPokemon, battleState: BattleState): PokemonType {

@@ -61,8 +61,9 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
     function getCustomVarInput(): ReactNode {
         if (props.moveData.move.customVarType === "number") {
             if (customInput === undefined) {
-                setCustomInput(0);
-                props.moveData.customVar = 0;
+                const defaultVal = props.moveData.move.getDefaultCustomVar(props.user, props.target, props.battleState) ?? 0;
+                setCustomInput(defaultVal);
+                props.moveData.customVar = defaultVal;
             }
             return (
                 <div className="flex text-center">
