@@ -32,14 +32,11 @@ import { TypeChangingItem } from "../items/TypeChangingItem";
 import { WeatherImmuneItem } from "../items/WeatherImmuneItem";
 import { ConditionalCritMove } from "../moves/ConditionalCritMove";
 import { AllyDefScalingMove } from "../moves/AllyDefScalingMove";
-import { BreakScreensMove } from "../moves/BreakScreensMove";
-import { BypassProtectMove } from "../moves/BypassProtectMove";
 import { ConditionalAutoBoostMove } from "../moves/ConditionalAutoBoostMove";
 import { ConditionalInputBoostMove } from "../moves/ConditionalInputBoostMove";
 import { DesperationMove } from "../moves/DesperationMove";
 import { DifferentAttackingStatMove } from "../moves/DifferentAttackStatMove";
 import { DifferentDefenseStatMove } from "../moves/DifferentDefenseStatMove";
-import { DoubleCritMove } from "../moves/DoubleCritMove";
 import { ExtraEffectiveMove } from "../moves/ExtraEffectiveMove";
 import { ExtraTypeMove } from "../moves/ExtraTypeMove";
 import { FacadeMove } from "../moves/FacadeMove";
@@ -47,7 +44,6 @@ import { FaintedAllyScalingMove } from "../moves/FaintedAllyScalingMove";
 import { FixedDamageMove } from "../moves/FixedDamageMove";
 import { GutCheckMove } from "../moves/GutCheckMove";
 import { HeightUserScalingMove } from "../moves/HeightUserScalingMove";
-import { HitsFliersMove } from "../moves/HitsFliersMove";
 import { HPScalingMove } from "../moves/HPScalingMove";
 import { IgnoreStatMove } from "../moves/IgnoreStatMove";
 import { MultiHitMove } from "../moves/MultiHitMove";
@@ -77,14 +73,11 @@ const data = loadedData as LoadedDataJson;
 const moveSubclasses = [
     ConditionalCritMove,
     AllyDefScalingMove,
-    BreakScreensMove,
-    BypassProtectMove,
     ConditionalAutoBoostMove,
     ConditionalInputBoostMove,
     DesperationMove,
     DifferentAttackingStatMove,
     DifferentDefenseStatMove,
-    DoubleCritMove,
     ExtraEffectiveMove,
     FixedDamageMove,
     ExtraTypeMove,
@@ -92,7 +85,6 @@ const moveSubclasses = [
     FaintedAllyScalingMove,
     GutCheckMove,
     HeightUserScalingMove,
-    HitsFliersMove,
     HPScalingMove,
     IgnoreStatMove,
     MultiHitMove,
@@ -109,6 +101,23 @@ const moveSubclasses = [
     VariableTypeMove,
     WeightTargetScalingMove,
     WeightUserScalingMove,
+];
+const moveModifiers: Array<{ moveCodes: string[]; apply: (move: Move) => void }> = [
+    {
+        moveCodes: [
+            "AlwaysHits",
+            "FrostbiteTargetAlwaysHitsInHail",
+            "HitTwoToFiveTimesAlwaysHits",
+            "NumbTargetAlwaysHitsInRainstormHitsTargetInSky",
+            "RemoveProtections",
+            "RemoveProtectionsBypassSubstituteAlwaysHits",
+            "TwoTurnAttackInvulnerableRemoveProtections",
+        ],
+        apply: (m) => { m.bypassesProtect = true; },
+    },
+    { moveCodes: ["RemoveScreens"], apply: (m) => { m.ignoresScreens = true; } },
+    { moveCodes: ["HitsTargetInSkyGroundsTarget"], apply: (m) => { m.hitsFliers = true; } },
+    { moveCodes: ["DoubleDamageOnCrit"], apply: (m) => { m.criticalMultiplier = 3; } },
 ];
 const itemSubclasses = [
     CategoryBoostingItem,
@@ -213,7 +222,13 @@ Ability.NULL = new Ability();
 
 TectonicData.moves = fromLoadedMapped(data.moves, (x) => {
     const subclass = moveSubclasses.find((sc) => sc.moveCodes.includes(x.functionCode));
-    return subclass ? new subclass(x) : new Move(x);
+    const move = subclass ? new subclass(x) : new Move(x);
+    for (const mod of moveModifiers) {
+        if (mod.moveCodes.includes(x.functionCode)) {
+            mod.apply(move);
+        }
+    }
+    return move;
 });
 Move.NULL = new Move();
 // these are some hefty filters potentially used a few times so may as well cache 'em

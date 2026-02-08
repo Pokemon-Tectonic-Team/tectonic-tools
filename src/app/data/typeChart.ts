@@ -1,7 +1,6 @@
 import { ExtraTypeAbility } from "./abilities/ExtraTypeAbility";
 import { ExtraEffectiveMove } from "./moves/ExtraEffectiveMove";
 import { ExtraTypeMove } from "./moves/ExtraTypeMove";
-import { HitsFliersMove } from "./moves/HitsFliersMove";
 import { Ability } from "./tectonic/Ability";
 import { Move } from "./tectonic/Move";
 import { PokemonType } from "./tectonic/PokemonType";
@@ -31,7 +30,7 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData) {
 
     // certain moves pierce ground immunity
     // TODO: Revisit this to make it more generic when e.g. gravity is implemented
-    if (atk.move instanceof HitsFliersMove && atk.type.id === "GROUND") {
+    if (atk.move?.hitsFliers && atk.type.id === "GROUND") {
         defType1Calc = Math.max(defType1Calc, 1);
     }
 
@@ -41,7 +40,7 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData) {
         const defType2 = def.type2;
         defType2Calc = TectonicData.typeChart[atkType.index][defType2.index];
         // certain moves pierce ground immunity
-        if (atk.move instanceof HitsFliersMove && atk.type.id === "GROUND") {
+        if (atk.move?.hitsFliers && atk.type.id === "GROUND") {
             defType2Calc = Math.max(defType2Calc, 1);
         }
     }
@@ -51,7 +50,7 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData) {
         // Apply modifiedMatchup from each ability
         defAbilityCalc *= defAbility.modifiedMatchup(atk.type);
         // certain moves pierce ground immunity
-        if (defAbilityCalc === 0 && atk.move instanceof HitsFliersMove && atk.type.id === "GROUND") {
+        if (defAbilityCalc === 0 && atk.move?.hitsFliers && atk.type.id === "GROUND") {
             defAbilityCalc = 1;
         }
 

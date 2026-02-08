@@ -106,9 +106,10 @@ export class Move {
         return this.functionCode.includes("BindTarget");
     }
 
-    public bypassesProtect(): boolean {
-        return false;
-    }
+    bypassesProtect: boolean = false;
+    hitsFliers: boolean = false;
+    ignoresScreens: boolean = false;
+    criticalMultiplier: number = 1.5;
 
     public getTargetPositions(): boolean[][] {
         // Format is [[Foe, Foe], [User, Ally]]
@@ -207,9 +208,7 @@ export class Move {
         return category === "Physical" ? "defense" : "spdef";
     }
 
-    public ignoresScreens(): boolean {
-        return false;
-    }
+
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public getDamageCategory(move: MoveData, user: PartyPokemon, target: PartyPokemon): "Physical" | "Special" {
@@ -238,9 +237,7 @@ export class Move {
         return false;
     }
 
-    public getCriticalMultiplier(): number {
-        return 1.5;
-    }
+
 
     public getCategoryImgSrc(): string {
         return Move.getMoveCategoryImgSrc(this.category);

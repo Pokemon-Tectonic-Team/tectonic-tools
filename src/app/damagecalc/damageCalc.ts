@@ -35,7 +35,7 @@ export function calculateDamage(
     // }
 
     // Protect blocks all damage from moves that don't bypass it
-    if (battleState.sideState.protecting && !move.move.bypassesProtect()) {
+    if (battleState.sideState.protecting && !move.move.bypassesProtect) {
         return { damage: 0, percentage: 0, hits: 0, typeEffectMult: 1 };
     }
 
@@ -502,7 +502,7 @@ function pbCalcProtectionsDamageMultipliers(
 ): DamageMultipliers {
     // Aurora Veil, Reflect, Light Screen
     // TODO: Abilities that ignore screens?
-    if (!move.move.ignoresScreens() && !doesMoveCrit(move, target) /* && !user.ignoreScreens(checkingForAI)*/) {
+    if (!move.move.ignoresScreens && !doesMoveCrit(move, target) /* && !user.ignoreScreens(checkingForAI)*/) {
         if (
             battleState.sideState.auroraVeil ||
             (battleState.sideState.reflect && move.move.getDamageCategory(move, user, target) === "Physical") ||
@@ -793,7 +793,7 @@ function calcDamageMultipliers(
     // Critical hits
     if (doesMoveCrit(move, target)) {
         // TODO: Implement moves with increased critical hit damage
-        multipliers.final_damage_multiplier *= move.move.getCriticalMultiplier();
+        multipliers.final_damage_multiplier *= move.move.criticalMultiplier;
     }
 
     // Random variance (What used to be for that)
