@@ -25,6 +25,7 @@ const moveConditions: Record<string, string> = {
     DamageBoost50PercentNotTargetFirstTurn: "Not Target's First Turn",
     PowerDoublesTargetLastAlive: "Last Non-Fainted Team Member",
     DoubleDamageFirstTurn: "User's First Turn",
+    DoubleDamageTargetBelowHalf: "Target Below Half HP",
 };
 
 const moveBoosts: Record<string, number> = {
