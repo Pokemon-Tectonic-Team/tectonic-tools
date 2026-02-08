@@ -11,6 +11,8 @@ export class Ability {
     description: string = "";
     flags: string[] = [];
     isSignature: boolean = false;
+    needsInput: boolean = false;
+    customVarName: string = "";
 
     static NULL: Ability = null!;
 

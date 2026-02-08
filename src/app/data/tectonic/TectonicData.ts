@@ -4,6 +4,7 @@ import { AttackMultBoostAbility } from "../abilities/AttackMultBoostAbility";
 import { BaseDamageBoostAbility } from "../abilities/BaseDamageBoostAbility";
 import { CancelWeatherAbility } from "../abilities/CancelWeatherAbility";
 import { DefensiveDamageAbility } from "../abilities/DefensiveDamageAbility";
+import { DisguiseAbility } from "../abilities/DisguiseAbility";
 import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { FasterBoostDamageAbility } from "../abilities/FasterBoostDamageAbility";
 import { OffensiveDamageBoostAbility } from "../abilities/OffensiveDamageBoostAbility";
@@ -126,6 +127,7 @@ const abilitySubclasses = [
     BaseDamageBoostAbility,
     CancelWeatherAbility,
     DefensiveDamageAbility,
+    DisguiseAbility,
     ExtraTypeAbility,
     FasterBoostDamageAbility,
     OffensiveDamageBoostAbility,

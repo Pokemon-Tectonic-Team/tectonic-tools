@@ -29,6 +29,7 @@ export class PartyPokemon {
     statSteps: Stats;
     statusEffect: StatusEffect;
     volatileStatusEffects: Record<VolatileStatusEffect, boolean>;
+    abilityCustomVar: unknown;
 
     constructor(data?: Partial<PartyPokemon>) {
         this.species = data?.species || Pokemon.NULL;
@@ -45,6 +46,7 @@ export class PartyPokemon {
         this.volatileStatusEffects =
             data?.volatileStatusEffects ||
             (Object.fromEntries(volatileStatusEffects.map((e) => [e, false])) as Record<VolatileStatusEffect, boolean>);
+        this.abilityCustomVar = data?.abilityCustomVar;
     }
 
     public hasFragileLocket(): boolean {

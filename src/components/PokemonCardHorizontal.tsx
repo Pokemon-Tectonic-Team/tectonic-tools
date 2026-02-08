@@ -179,6 +179,7 @@ export default function PokemonCardHorizontal({
                                     value={partyMon.ability.id}
                                     onChange={(e) => {
                                         partyMon.ability = TectonicData.abilities[e.target.value];
+                                        partyMon.abilityCustomVar = undefined;
                                         onUpdate();
                                     }}
                                     title={partyMon.ability.description}
@@ -199,6 +200,18 @@ export default function PokemonCardHorizontal({
                                             + {partyMon.getSecondaryAbility()!.name}
                                         </div>
                                     )}
+
+                                {showBattleConfig && partyMon.ability.needsInput && (
+                                    <Checkbox
+                                        checked={!!partyMon.abilityCustomVar}
+                                        onChange={() => {
+                                            partyMon.abilityCustomVar = !partyMon.abilityCustomVar;
+                                            onUpdate();
+                                        }}
+                                    >
+                                        {partyMon.ability.customVarName}
+                                    </Checkbox>
+                                )}
 
                                 {Array.from({ length: partyMon.ability instanceof TwoItemAbility ? 2 : 1 }).map(
                                     (_, i) => (
