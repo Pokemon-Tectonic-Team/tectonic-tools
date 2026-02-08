@@ -44,6 +44,11 @@ export class Ability {
         return 1;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public defensiveMultiplier(move: MoveData, user: PartyPokemon, target: PartyPokemon, battleState: BattleState, typeEffectMult: number): number {
+        return 1;
+    }
+
     public hasSunSynergy() {
         return this.flags.includes("SunshineSynergy");
     }

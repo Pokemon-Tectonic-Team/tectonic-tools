@@ -3,6 +3,7 @@ import loadedData from "public/data/loadedData.json";
 import { AttackMultBoostAbility } from "../abilities/AttackMultBoostAbility";
 import { BaseDamageBoostAbility } from "../abilities/BaseDamageBoostAbility";
 import { CancelWeatherAbility } from "../abilities/CancelWeatherAbility";
+import { DefensiveDamageAbility } from "../abilities/DefensiveDamageAbility";
 import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { FasterBoostDamageAbility } from "../abilities/FasterBoostDamageAbility";
 import { ParanoidAbility } from "../abilities/ParanoidAbility";
@@ -123,6 +124,7 @@ const abilitySubclasses = [
     AttackMultBoostAbility,
     BaseDamageBoostAbility,
     CancelWeatherAbility,
+    DefensiveDamageAbility,
     ExtraTypeAbility,
     FasterBoostDamageAbility,
     ParanoidAbility,
