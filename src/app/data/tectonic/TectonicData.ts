@@ -29,7 +29,7 @@ import { SuperEffectiveResistItem } from "../items/SuperEffectiveResistItem";
 import { TypeBoostingItem } from "../items/TypeBoostingItem";
 import { TypeChangingItem } from "../items/TypeChangingItem";
 import { WeatherImmuneItem } from "../items/WeatherImmuneItem";
-import { AlwaysCritMove } from "../moves/AlwaysCritMove";
+import { ConditionalCritMove } from "../moves/ConditionalCritMove";
 import { AllyDefScalingMove } from "../moves/AllyDefScalingMove";
 import { BreakScreensMove } from "../moves/BreakScreensMove";
 import { ConditionalAutoBoostMove } from "../moves/ConditionalAutoBoostMove";
@@ -72,7 +72,7 @@ import { Tribe } from "./Tribe";
 
 const data = loadedData as LoadedDataJson;
 const moveSubclasses = [
-    AlwaysCritMove,
+    ConditionalCritMove,
     AllyDefScalingMove,
     BreakScreensMove,
     ConditionalAutoBoostMove,

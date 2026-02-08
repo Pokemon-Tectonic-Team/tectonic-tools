@@ -23,13 +23,18 @@ export interface MoveCardProps {
 }
 
 export default function MoveCard(props: MoveCardProps): ReactNode {
-    const [crit, setCrit] = useState<boolean>(props.target.volatileStatusEffects.Jinx || props.moveData.criticalHit);
+    const forcesCrit =
+        props.moveData.move.forceCrit(props.user, props.target, props.battleState) ||
+        props.target.volatileStatusEffects.Jinx;
+    const [crit, setCrit] = useState<boolean>(forcesCrit || props.moveData.criticalHit);
     const [customInput, setCustomInput] = useState<unknown>(props.moveData.customVar);
 
+    // Sync moveData.criticalHit so the damage calc sees forced crits
+    props.moveData.criticalHit = crit || forcesCrit;
     const result = calculateDamage(props.moveData, props.user, props.target, props.battleState);
     useEffect(() => {
-        setCrit(props.target.volatileStatusEffects.Jinx || props.moveData.criticalHit);
-    }, [props]);
+        setCrit(forcesCrit || props.moveData.criticalHit);
+    }, [props, forcesCrit]);
 
     function getDmgNode() {
         if (result.minTotal && result.minPercentage && result.maxTotal && result.maxPercentage) {
@@ -142,7 +147,7 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                                     type="checkbox"
                                     checked={crit}
                                     className="form-checkbox ml-1"
-                                    disabled={props.moveData.move.alwaysCrits() || props.target.volatileStatusEffects.Jinx}
+                                    disabled={forcesCrit}
                                     onChange={() => {
                                         setCrit(!crit);
                                         props.moveData.criticalHit = !crit;

@@ -217,7 +217,8 @@ export class Move {
         return "player";
     }
 
-    public alwaysCrits(): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public forceCrit(user: PartyPokemon, target: PartyPokemon, battleState: BattleState): boolean {
         return false;
     }
 

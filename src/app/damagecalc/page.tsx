@@ -82,23 +82,29 @@ const PokemonDamageCalculator: NextPage = () => {
     }
 
     useEffect(() => {
-        function genMoveDataWithCarryOver(mon: PartyPokemon | null, moveData: MoveData[]): MoveData[] {
+        function genMoveDataWithCarryOver(
+            mon: PartyPokemon | null,
+            target: PartyPokemon | null,
+            moveData: MoveData[]
+        ): MoveData[] {
+            const battleState = getBattleState(nullSideState);
             return mon
                 ? mon.moves
                       .filter((x) => x.isAttackingMove())
                       .map((x) => {
                           const oldMoveData = moveData.find((old) => old.move.id == x.id);
+                          const forcesCrit = target ? x.forceCrit(mon, target, battleState) : false;
                           return {
                               move: x,
                               customVar: oldMoveData?.customVar,
-                              criticalHit: x.alwaysCrits() || (oldMoveData?.criticalHit ?? false),
+                              criticalHit: forcesCrit || (oldMoveData?.criticalHit ?? false),
                           };
                       })
                 : [];
         }
 
-        setPlayerMoveData(genMoveDataWithCarryOver(playerMon, playerMoveData));
-        setOpponentMoveData(genMoveDataWithCarryOver(opponentMon, opponentMoveData));
+        setPlayerMoveData(genMoveDataWithCarryOver(playerMon, opponentMon, playerMoveData));
+        setOpponentMoveData(genMoveDataWithCarryOver(opponentMon, playerMon, opponentMoveData));
     }, [playerMon, opponentMon]); // eslint-disable-line react-hooks/exhaustive-deps -- We specifically don't want MoveData as a dep as that is an infinite loop.
 
     return (
