@@ -42,7 +42,7 @@ export function calculateDamage(
 
     // Calculate the actual damage dealt, and assign it to the damage state for tracking
     const [damage, typeEffectMult] = calculateDamageForHit(move, user, target, baseDmg, battleState);
-    const percentage = damage / target.getStats(move, "opponent").hp;
+    const percentage = damage / target.getStats(move, "opponent", battleState).hp;
     const hits = Math.ceil(1 / percentage);
     if (move.move instanceof MultiHitMove) {
         const minTotal = damage * move.move.minHits;
@@ -54,8 +54,8 @@ export function calculateDamage(
             typeEffectMult,
             minTotal,
             maxTotal,
-            minPercentage: minTotal / target.getStats(move, "opponent").hp,
-            maxPercentage: maxTotal / target.getStats(move, "opponent").hp,
+            minPercentage: minTotal / target.getStats(move, "opponent", battleState).hp,
+            maxPercentage: maxTotal / target.getStats(move, "opponent", battleState).hp,
         };
     }
     return { damage, percentage, hits, typeEffectMult };
@@ -69,7 +69,7 @@ function calculateDamageForHit(
     battleState: BattleState
 ): [number, number] {
     // Get the relevant attacking and defending stat values (after steps)
-    const [attack, defense] = damageCalcStats(move, user, target);
+    const [attack, defense] = damageCalcStats(move, user, target, battleState);
 
     // Calculate all multiplier effects
     const [multipliers, typeEffectMult] = calcDamageMultipliers(move, user, target, battleState);
@@ -127,7 +127,7 @@ function calcBasicDamage(
     return Math.floor(2.0 + (levelMultiplier * baseDamage * userAttackingStat) / targetDefendingStat / 50.0);
 }
 
-function damageCalcStats(move: MoveData, userStats: PartyPokemon, targetStats: PartyPokemon): [number, number] {
+function damageCalcStats(move: MoveData, userStats: PartyPokemon, targetStats: PartyPokemon, battleState: BattleState): [number, number] {
     // Calculate category for adaptive moves
     const trueCategory = move.move.getDamageCategory(move, userStats, targetStats);
 
@@ -151,14 +151,14 @@ function damageCalcStats(move: MoveData, userStats: PartyPokemon, targetStats: P
 
     // attack_step = 0 if target.hasActiveAbility("UNAWARE") && !battle.moldBreaker;
     // TODO: figure out how crits interact with foul play
-    const attack = attacking_stat_holder.getStats(move, "player")[attacking_stat];
+    const attack = attacking_stat_holder.getStats(move, "player", battleState)[attacking_stat];
 
     // Calculate target's defense stat
     const defending_stat_holder = targetStats;
     const defending_stat: Stat = move.move.getDefendingStat(trueCategory);
 
     // defense_step = 0 if user.hasActiveAbility("UNAWARE");
-    const defense = defending_stat_holder.getStats(move, "opponent")[defending_stat];
+    const defense = defending_stat_holder.getStats(move, "opponent", battleState)[defending_stat];
 
     return [attack, defense];
 }

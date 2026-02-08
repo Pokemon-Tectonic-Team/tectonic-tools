@@ -29,7 +29,8 @@ export class Ability {
         return 1;
     }
 
-    public modifyStats(stats: Stats) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public modifyStats(stats: Stats, battleState?: BattleState) {
         return stats;
     }
 

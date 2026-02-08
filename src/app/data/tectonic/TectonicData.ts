@@ -14,6 +14,7 @@ import { TypeImmunityAbility } from "../abilities/TypeImmunityAbility";
 import { TypeImmunityWeaknessAbility } from "../abilities/TypeImmunityWeaknessAbility";
 import { TypeResistAbility } from "../abilities/TypeResistAbility";
 import { TypeWeaknessAbility } from "../abilities/TypeWeaknessAbility";
+import { WeatherStatAbility } from "../abilities/WeatherStatAbility";
 import { CategoryBoostingItem } from "../items/CategoryBoostingItem";
 import { EvioliteItem } from "../items/EvioliteItem";
 import { FlatDamageBoostItem } from "../items/FlatDamageBoostItem";
@@ -133,6 +134,7 @@ const abilitySubclasses = [
     TypeImmunityWeaknessAbility,
     TypeResistAbility,
     TypeWeaknessAbility,
+    WeatherStatAbility,
 ];
 
 function fromLoaded<L extends LoadedData<L>, T>(load: Record<string, L>, ctor: new (l: L) => T): Record<string, T> {

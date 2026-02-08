@@ -54,8 +54,8 @@ const PokemonDamageCalculator: NextPage = () => {
     const [playerMoveData, setPlayerMoveData] = useState<MoveData[]>([]);
     const [opponentMoveData, setOpponentMoveData] = useState<MoveData[]>([]);
 
-    const playerSpeed = playerMon?.getStats(undefined, undefined).speed;
-    const oppSpeed = opponentMon?.getStats(undefined, undefined).speed;
+    const playerSpeed = playerMon?.getStats(undefined, undefined, getBattleState(nullSideState)).speed;
+    const oppSpeed = opponentMon?.getStats(undefined, undefined, getBattleState(nullSideState)).speed;
     const speedOrder =
         !playerSpeed || !oppSpeed
             ? SpeedOrderEnum.NoDisplay
