@@ -16,6 +16,16 @@ export default function SideStateUI({ onUpdate }: { onUpdate: (sideState: SideSt
     return (
         <div className="flex flex-col gap-1 mb-1">
             <div className="flex gap-2">
+                <Checkbox
+                    checked={sideState.protecting}
+                    onChange={() => {
+                        const newState = { ...sideState, protecting: !sideState.protecting };
+                        setSideState(newState);
+                        onUpdate(newState);
+                    }}
+                >
+                    Protect
+                </Checkbox>
                 {screenStateKeys.map((k) => (
                     <Checkbox
                         key={k}

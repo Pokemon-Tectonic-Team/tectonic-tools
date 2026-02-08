@@ -33,6 +33,7 @@ import { WeatherImmuneItem } from "../items/WeatherImmuneItem";
 import { ConditionalCritMove } from "../moves/ConditionalCritMove";
 import { AllyDefScalingMove } from "../moves/AllyDefScalingMove";
 import { BreakScreensMove } from "../moves/BreakScreensMove";
+import { BypassProtectMove } from "../moves/BypassProtectMove";
 import { ConditionalAutoBoostMove } from "../moves/ConditionalAutoBoostMove";
 import { ConditionalInputBoostMove } from "../moves/ConditionalInputBoostMove";
 import { DesperationMove } from "../moves/DesperationMove";
@@ -77,6 +78,7 @@ const moveSubclasses = [
     ConditionalCritMove,
     AllyDefScalingMove,
     BreakScreensMove,
+    BypassProtectMove,
     ConditionalAutoBoostMove,
     ConditionalInputBoostMove,
     DesperationMove,

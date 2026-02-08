@@ -106,6 +106,10 @@ export class Move {
         return this.functionCode.includes("BindTarget");
     }
 
+    public bypassesProtect(): boolean {
+        return false;
+    }
+
     public getTargetPositions(): boolean[][] {
         // Format is [[Foe, Foe], [User, Ally]]
         switch (this.target) {

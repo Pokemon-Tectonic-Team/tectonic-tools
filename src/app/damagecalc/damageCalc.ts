@@ -34,6 +34,11 @@ export function calculateDamage(
     //     return;
     // }
 
+    // Protect blocks all damage from moves that don't bypass it
+    if (battleState.sideState.protecting && !move.move.bypassesProtect()) {
+        return { damage: 0, percentage: 0, hits: 0, typeEffectMult: 1 };
+    }
+
     // Fixed damage moves bypass the entire formula
     const fixedDamage = move.move.getFixedDamage(user, target, battleState, move.customVar);
     if (fixedDamage !== null) {
