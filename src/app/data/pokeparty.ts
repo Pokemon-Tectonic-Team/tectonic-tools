@@ -254,7 +254,7 @@ export class PokePartyEncoding {
                         TectonicData.abilities,
                         Ability.NULL,
                     );
-                    mon.moves[0] = move1Id == 0 ? Move.NULL : TectonicData.moves[decodingMapping.moves[move1Id]];
+                    mon.moves[0] = TectonicData.moves[decodingMapping.moves[move1Id]] ?? Move.NULL;
                     mon.moves[1] = decodeMapId(
                         "moves",
                         secondU32,
@@ -292,12 +292,13 @@ export class PokePartyEncoding {
                     if (hasItem2) {
                         const item2Id = view.getUint16(offset);
                         offset += 2;
-                        mon.items[1] = TectonicData.items[decodingMapping.heldItems[item2Id]];
+                        mon.items[1] = TectonicData.items[decodingMapping.heldItems[item2Id]] ?? Item.NULL;
                     }
                     if (hasItem1Type) {
                         const item1TypeId = view.getUint8(offset);
                         offset++;
-                        mon.itemType = TectonicData.types[decodingMapping.types[item1TypeId]];
+                        mon.itemType =
+                            TectonicData.types[decodingMapping.types[item1TypeId]] ?? TectonicData.types["NORMAL"];
                     }
                 } else break;
 
@@ -377,5 +378,5 @@ function decodeMapId<T>(
     def: T,
 ): T {
     const key = (u32 & mask) >>> shift;
-    return key == 0 ? def : tectonicDataRecord[decodingMapping[category][key]];
+    return tectonicDataRecord[decodingMapping[category][key]] ?? def;
 }
