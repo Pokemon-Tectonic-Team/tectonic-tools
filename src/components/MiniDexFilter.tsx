@@ -121,6 +121,7 @@ export function MiniDexFilter({ onMon }: { onMon: (mon: Pokemon) => void }): JSX
                     <select
                         className="border rounded px-2 py-1 bg-gray-700 text-white border-gray-600"
                         value={playthrough}
+                        onChange={(e) => setPlaythrough(Number(e.target.value))}
                     >
                         <option key={-1} value="-1">
                             Filter: Tracker Encounters
