@@ -39,6 +39,8 @@ displayableMoveFlags.add("Sound");
 displayableMoveFlags.add("Punch");
 displayableMoveFlags.add("Dance");
 displayableMoveFlags.add("Blade");
+// updated name for Blade tag on dev
+displayableMoveFlags.add("Slice");
 displayableMoveFlags.add("Biting");
 displayableMoveFlags.add("Bite");
 // kicking/kick has different tag names on live and dev
@@ -151,12 +153,14 @@ export class Move {
                 ];
         }
     }
-    
+
     public isSTAB(mon: PartyPokemon): boolean {
-        return this.type &&
+        return (
+            this.type &&
             (mon.types.type1 === this.type ||
                 mon.types.type2 === this.type ||
-                mon.getActiveAbilities().some((a) => a instanceof ExtraTypeAbility && a.extraType.id === this.type.id));
+                mon.getActiveAbilities().some((a) => a instanceof ExtraTypeAbility && a.extraType.id === this.type.id))
+        );
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
