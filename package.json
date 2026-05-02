@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "tsx src/preload/downloadData.ts && next build",
     "build-dev": "tsx src/preload/downloadData.ts dev && next build",
     "start": "next start",
     "lint": "next lint",
