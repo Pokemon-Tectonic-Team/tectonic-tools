@@ -1,4 +1,4 @@
-import { LoadedTrainer } from "@/preload/loadedDataClasses";
+import { LoadedTrainer } from "@/app/data/loadedDataClasses";
 import { TectonicData } from "../tectonic/TectonicData";
 import { isNull } from "../util";
 import { Ability } from "./Ability";

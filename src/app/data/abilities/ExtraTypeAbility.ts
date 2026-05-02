@@ -1,4 +1,4 @@
-import { LoadedAbility } from "@/preload/loadedDataClasses";
+import { LoadedAbility } from "@/app/data/loadedDataClasses";
 import { Ability } from "../tectonic/Ability";
 import { PokemonType } from "../tectonic/PokemonType";
 import { TectonicData } from "../tectonic/TectonicData";

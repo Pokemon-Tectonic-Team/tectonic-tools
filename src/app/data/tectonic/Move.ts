@@ -1,7 +1,7 @@
 import { MoveData } from "@/app/damagecalc/components/MoveCard";
 import { Side } from "@/app/damagecalc/damageCalc";
 import { BattleState } from "@/app/data/battleState";
-import { LoadedMove } from "@/preload/loadedDataClasses";
+import { LoadedMove } from "@/app/data/loadedDataClasses";
 import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { MoveTypeChangeAbility } from "../abilities/MoveTypeChangeAbility";
 import { StatusEffect } from "../conditions";

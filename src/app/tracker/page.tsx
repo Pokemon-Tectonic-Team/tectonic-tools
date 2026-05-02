@@ -5,7 +5,7 @@ import ImageFallback from "@/components/ImageFallback";
 import PageHeader, { PageType } from "@/components/PageHeader";
 import PokemonModal from "@/components/PokemonModal";
 import CloseXButton from "@/components/svg_icons/CloseXButton";
-import { LoadedEncounterMap, LoadedEncounterTable } from "@/preload/loadedDataClasses";
+import { LoadedEncounterMap, LoadedEncounterTable } from "@/app/data/loadedDataClasses";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
