@@ -501,7 +501,6 @@ function pbCalcProtectionsDamageMultipliers(
     multipliers: DamageMultipliers
 ): DamageMultipliers {
     // Aurora Veil, Reflect, Light Screen
-    // TODO: Abilities that ignore screens?
     if (!move.move.ignoresScreens && !doesMoveCrit(move, target) /* && !user.ignoreScreens(checkingForAI)*/) {
         if (
             battleState.sideState.auroraVeil ||
