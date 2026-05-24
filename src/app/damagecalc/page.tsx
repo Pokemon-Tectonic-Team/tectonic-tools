@@ -42,7 +42,7 @@ const PokemonDamageCalculator: NextPage = () => {
     const [showOpponentSearch, setShowOpponentSearch] = useState<boolean>(false);
     const [loadedParty, setLoadedParty] = useState<PartyPokemon[]>([]);
     const [trainerText, setTrainerText] = useState<string>("");
-    const [trainer, setTrainer] = useState<Trainer>(Trainer.NULL);
+    const [trainers, setTrainers] = useState<Trainer[]>([]);
     const [playerMon, setPlayerMon] = useState<PartyPokemon | null>(null);
     const [opponentMon, setOpponentMon] = useState<PartyPokemon | null>(null);
     const [modalMon, setModalMon] = useState<Pokemon | null>(null);
@@ -297,49 +297,57 @@ const PokemonDamageCalculator: NextPage = () => {
                             </Fragment>
                         )}
                         <div className="w-fit h-fit overflow-auto mx-auto">
-                            <div className="flex flex-wrap items-center mx-auto">
-                                {trainer != Trainer.NULL && (
-                                    <div className="flex items-center">
-                                        <ImageFallback
-                                            src={trainer.getImageSrc()}
-                                            alt={trainer.displayName()}
-                                            title={trainer.displayName()}
-                                            height={160}
-                                            width={160}
-                                            className="w-16 h-16 hover:bg-yellow-highlight cursor-pointer"
-                                            onClick={() => setTrainer(Trainer.NULL)}
-                                        />
-                                        <span className="text-sm max-w-56 mt-4 text-center">
-                                            {trainer.displayName()}
-                                        </span>
+                            <div className="flex flex-col gap-3">
+                                {trainers.map((t, trainerIndex) => (
+                                    <div key={trainerIndex}>
+                                        <div className="flex items-center gap-1">
+                                            <ImageFallback
+                                                src={t.getImageSrc()}
+                                                alt={t.displayName()}
+                                                title={t.displayName()}
+                                                height={160}
+                                                width={160}
+                                                className="w-16 h-16"
+                                            />
+                                            <span className="text-sm max-w-40 text-center">{t.displayName()}</span>
+                                            <button
+                                                className="ml-1 text-red-400 hover:text-red-200 font-bold text-xl leading-none"
+                                                onClick={() => setTrainers(trainers.filter((_, i) => i !== trainerIndex))}
+                                                title="Remove trainer"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-wrap items-center">
+                                            {t.pokemon.map((x, index) => (
+                                                <ImageFallback
+                                                    key={`${x.pokemon.id}-${index}`}
+                                                    className="hover:bg-yellow-highlight cursor-pointer"
+                                                    src={x.pokemon.getIcon(x.form)}
+                                                    alt={x.pokemon.name}
+                                                    width={64}
+                                                    height={64}
+                                                    title={x.nickname ?? x.pokemon.name}
+                                                    onClick={() =>
+                                                        setOpponentMon(
+                                                            new PartyPokemon({
+                                                                species: x.pokemon,
+                                                                form: x.form,
+                                                                level: x.level,
+                                                                stylePoints: x.sp,
+                                                                moves: [...x.moves],
+                                                                items: [...x.items],
+                                                                itemType: x.itemType,
+                                                                ability: x.ability,
+                                                                nickname: x.nickname,
+                                                            }),
+                                                        )
+                                                    }
+                                                    onContextMenu={() => setModalMon(x.pokemon)}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
-                                )}
-                                {trainer.pokemon.map((x, index) => (
-                                    <ImageFallback
-                                        key={`${x.pokemon.id}-${index}`}
-                                        className={`hover:bg-yellow-highlight cursor-pointer`}
-                                        src={x.pokemon.getIcon(x.form)}
-                                        alt={x.pokemon.name}
-                                        width={64}
-                                        height={64}
-                                        title={x.nickname ?? x.pokemon.name}
-                                        onClick={() =>
-                                            setOpponentMon(
-                                                new PartyPokemon({
-                                                    species: x.pokemon,
-                                                    form: x.form,
-                                                    level: x.level,
-                                                    stylePoints: x.sp,
-                                                    moves: [...x.moves],
-                                                    items: [...x.items],
-                                                    itemType: x.itemType,
-                                                    ability: x.ability,
-                                                    nickname: x.nickname,
-                                                }),
-                                            )
-                                        }
-                                        onContextMenu={() => setModalMon(x.pokemon)}
-                                    />
                                 ))}
                             </div>
                         </div>
@@ -380,8 +388,10 @@ const PokemonDamageCalculator: NextPage = () => {
                                                 key={x.id}
                                                 className="flex flex-col items-center w-24"
                                                 onClick={() => {
-                                                    setTrainer(x);
-                                                    setOpponentMon(null);
+                                                    if (trainers.length < 3) {
+                                                        setTrainers([...trainers, x]);
+                                                        setOpponentMon(null);
+                                                    }
                                                 }}
                                             >
                                                 <ImageFallback
@@ -391,7 +401,7 @@ const PokemonDamageCalculator: NextPage = () => {
                                                     height={160}
                                                     width={160}
                                                     className={`w-18 h-18 hover:bg-yellow-highlight cursor-pointer ${
-                                                        trainer == x ? "bg-yellow-highlight" : ""
+                                                        trainers.includes(x) ? "bg-yellow-highlight" : ""
                                                     }`}
                                                 />
                                                 <span className="text-sm text-center">{x.displayName()}</span>
