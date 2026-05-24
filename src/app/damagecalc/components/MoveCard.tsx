@@ -165,7 +165,7 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                         props.battleState,
                         props.moveData.customVar
                     )}`}</span>
-                    <span>{`Accuracy: ${props.moveData.move.accuracy}%`}</span>
+                    <span>{`Accuracy: ${props.battleState.gravity && props.moveData.move.accuracy > 0 ? Math.min(props.moveData.move.accuracy * 2, 100) : props.moveData.move.accuracy}%`}</span>
                 </div>
                 <div className="flex flex-col">
                     <span>{`Priority: ${props.moveData.move.priority ?? "None"}`}</span>

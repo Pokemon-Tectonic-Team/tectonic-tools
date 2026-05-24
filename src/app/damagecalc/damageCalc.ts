@@ -574,7 +574,8 @@ function pbCalcTypeBasedDamageMultipliers(
     // variable type moves are handled here in Tectonic, but on the data level here
     const effectiveness = calcTypeMatchup(
         { type: type, move: move.move, abilities: user.getActiveAbilities() },
-        { type1: target.types.type1, type2: target.types.type2, abilities: target.getActiveAbilities() }
+        { type1: target.types.type1, type2: target.types.type2, abilities: target.getActiveAbilities() },
+        battleState
     );
     multipliers.final_damage_multiplier *= effectiveness;
 
