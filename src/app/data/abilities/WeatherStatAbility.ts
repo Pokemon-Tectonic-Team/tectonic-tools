@@ -1,15 +1,8 @@
 import { LoadedAbility } from "@/preload/loadedDataClasses";
 import { BattleState } from "../battleState";
-import { WeatherCondition } from "../conditions";
+import { eclipseWeathers, hailWeathers, moonWeathers, rainWeathers, sandWeathers, sunWeathers, WeatherCondition } from "../conditions";
 import { Ability } from "../tectonic/Ability";
 import { Stat, Stats } from "../tectonic/Pokemon";
-
-const sunWeathers: WeatherCondition[] = ["Sunshine", "Harsh Sunlight"];
-const rainWeathers: WeatherCondition[] = ["Rainstorm", "Heavy Rain"];
-const sandWeathers: WeatherCondition[] = ["Sandstorm"];
-const hailWeathers: WeatherCondition[] = ["Hail"];
-const eclipseWeathers: WeatherCondition[] = ["Eclipse", "Ring Eclipse"];
-const moonWeathers: WeatherCondition[] = ["Moonglow", "Blood Moon"];
 
 interface WeatherStatConfig {
     weathers: WeatherCondition[];

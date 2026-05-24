@@ -1,14 +1,9 @@
 import { MoveData } from "@/app/damagecalc/components/MoveCard";
 import { LoadedAbility } from "@/preload/loadedDataClasses";
 import { BattleState } from "../battleState";
-import { WeatherCondition } from "../conditions";
+import { eclipseWeathers, rainWeathers, sandWeathers, sunWeathers, WeatherCondition } from "../conditions";
 import { Ability } from "../tectonic/Ability";
 import { PartyPokemon } from "../types/PartyPokemon";
-
-const sunWeathers: WeatherCondition[] = ["Sunshine", "Harsh Sunlight"];
-const rainWeathers: WeatherCondition[] = ["Rainstorm", "Heavy Rain"];
-const sandWeathers: WeatherCondition[] = ["Sandstorm"];
-const eclipseWeathers: WeatherCondition[] = ["Eclipse", "Ring Eclipse"];
 
 type OffensiveConditionFunction = (
     move: MoveData,
