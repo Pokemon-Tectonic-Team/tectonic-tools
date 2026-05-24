@@ -89,8 +89,16 @@ const PokemonDamageCalculator: NextPage = () => {
         setParty: (party: PartyPokemon[]) => void,
     ) {
         const newMon = new PartyPokemon(currentMon);
+        const oldIndex = party.findIndex((x) => x == currentMon);
         const newParty = [...party];
-        newParty.push(newMon);
+        if (oldIndex == -1 && newParty.length < 6) {
+            // Mon not yet in party and there's room — add it
+            newParty.push(newMon);
+        } else if (oldIndex > -1) {
+            // Mon already in party — replace its entry to reflect changes made via the card
+            newParty[oldIndex] = newMon;
+        }
+        // else: party is full and mon isn't in it; don't modify the party
         setMon(newMon);
         setParty(newParty);
     }
