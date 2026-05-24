@@ -49,7 +49,7 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData, battleStat
     // Process all defender abilities (supports Fragile Locket dual abilities)
     for (const defAbility of def.abilities ?? []) {
         // Apply modifiedMatchup from each ability
-        defAbilityCalc *= defAbility.modifiedMatchup(atk.type);
+        defAbilityCalc *= defAbility.modifiedMatchup(atk.type, battleState);
         if (defAbilityCalc === 0 && piercesGroundImmunity) {
             defAbilityCalc = 1;
         }

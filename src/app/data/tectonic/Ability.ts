@@ -25,7 +25,7 @@ export class Ability {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public modifiedMatchup(type: PokemonType) {
+    public modifiedMatchup(type: PokemonType, battleState?: BattleState) {
         return 1;
     }
 
