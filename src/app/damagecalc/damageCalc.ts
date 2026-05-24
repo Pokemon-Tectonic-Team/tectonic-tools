@@ -280,7 +280,7 @@ function pbCalcWeatherDamageMultipliers(
     multipliers: DamageMultipliers
 ): DamageMultipliers {
     const weather = battleState.weather;
-    const type = move.move.getType(user,battleState).id == "FLEX" ? user.types.type1 :move.move.getType(user, battleState).id;
+    const type = move.move.getType(user, battleState).id;
     switch (weather) {
         case "Sunshine":
         case "Harsh Sunlight":
