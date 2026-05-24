@@ -20,6 +20,7 @@ import { WeatherCondition, weatherConditions } from "../data/conditions";
 import { Pokemon } from "../data/tectonic/Pokemon";
 import { TectonicData } from "../data/tectonic/TectonicData";
 import { Trainer } from "../data/tectonic/Trainer";
+import { PokePartyEncoding } from "../data/pokeparty";
 import { MAX_LEVEL } from "../data/teamExport";
 import { PartyPokemon } from "../data/types/PartyPokemon";
 import MoveCard, { MoveData } from "./components/MoveCard";
@@ -44,6 +45,7 @@ const PokemonDamageCalculator: NextPage = () => {
     const [loadedParty, setLoadedParty] = useState<PartyPokemon[]>([]);
     const [trainerText, setTrainerText] = useState<string>("");
     const [trainers, setTrainers] = useState<Trainer[]>([]);
+    const [activeTrainer, setActiveTrainer] = useState<Trainer | null>(null);
     const [playerMon, setPlayerMon] = useState<PartyPokemon | null>(null);
     const [opponentMon, setOpponentMon] = useState<PartyPokemon | null>(null);
     const [modalMon, setModalMon] = useState<Pokemon | null>(null);
@@ -69,6 +71,25 @@ const PokemonDamageCalculator: NextPage = () => {
     const matchingTrainers = sortedTrainers.filter((x) =>
         x.displayName().toLowerCase().includes(trainerText.toLowerCase()),
     );
+
+    function exportTrainerToTeamBuilder(t: Trainer) {
+        const party = t.pokemon.map(
+            (x) =>
+                new PartyPokemon({
+                    species: x.pokemon,
+                    form: x.form,
+                    level: x.level,
+                    stylePoints: x.sp,
+                    moves: [...x.moves],
+                    items: [...x.items],
+                    itemType: x.itemType,
+                    ability: x.ability,
+                    nickname: x.nickname,
+                }),
+        );
+        const code = PokePartyEncoding.encode(party);
+        window.open(`/teambuilder?team=${code}`, "_blank");
+    }
 
     function getDefaultPlayerLevel(): number {
         if (trainers.length === 0) return MAX_LEVEL;
@@ -319,7 +340,10 @@ const PokemonDamageCalculator: NextPage = () => {
                                             <span className="text-sm max-w-40 text-center">{t.displayName()}</span>
                                             <button
                                                 className="ml-1 text-red-400 hover:text-red-200 font-bold text-xl leading-none"
-                                                onClick={() => setTrainers(trainers.filter((_, i) => i !== trainerIndex))}
+                                                onClick={() => {
+                                                    setTrainers(trainers.filter((_, i) => i !== trainerIndex));
+                                                    if (activeTrainer === t) setActiveTrainer(null);
+                                                }}
                                                 title="Remove trainer"
                                             >
                                                 ×
@@ -335,7 +359,7 @@ const PokemonDamageCalculator: NextPage = () => {
                                                     width={64}
                                                     height={64}
                                                     title={x.nickname ?? x.pokemon.name}
-                                                    onClick={() =>
+                                                    onClick={() => {
                                                         setOpponentMon(
                                                             new PartyPokemon({
                                                                 species: x.pokemon,
@@ -348,8 +372,9 @@ const PokemonDamageCalculator: NextPage = () => {
                                                                 ability: x.ability,
                                                                 nickname: x.nickname,
                                                             }),
-                                                        )
-                                                    }
+                                                        );
+                                                        setActiveTrainer(t);
+                                                    }}
                                                     onContextMenu={() => setModalMon(x.pokemon)}
                                                 />
                                             ))}
@@ -358,6 +383,12 @@ const PokemonDamageCalculator: NextPage = () => {
                                 ))}
                             </div>
                         </div>
+
+                        {activeTrainer && (
+                            <BasicButton onClick={() => exportTrainerToTeamBuilder(activeTrainer)}>
+                                View in Team Builder
+                            </BasicButton>
+                        )}
 
                         <hr className="w-full my-3" />
                         <div className="flex items-center gap-2">
