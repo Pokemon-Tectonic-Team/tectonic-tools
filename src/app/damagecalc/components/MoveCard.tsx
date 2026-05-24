@@ -6,7 +6,7 @@ import { getTypeColorClass } from "@/components/colours";
 import ImageFallback from "@/components/ImageFallback";
 import TypeBadge, { TypeBadgeElementEnum } from "@/components/TypeBadge";
 import { getColourClassForMult, getEffectiveMessageForMult, getTextColourForMult } from "@/components/TypeChartCell";
-import { Fragment, ReactNode, useEffect, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import { calculateDamage } from "../damageCalc";
 
 export interface MoveData {
@@ -26,15 +26,12 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
     const forcesCrit =
         props.moveData.move.forceCrit(props.user, props.target, props.battleState) ||
         props.target.volatileStatusEffects.Jinx;
-    const [crit, setCrit] = useState<boolean>(forcesCrit || props.moveData.criticalHit);
+    const [manualCrit, setManualCrit] = useState<boolean>(props.moveData.criticalHit);
     const [customInput, setCustomInput] = useState<unknown>(props.moveData.customVar);
 
-    // Sync moveData.criticalHit so the damage calc sees forced crits
-    props.moveData.criticalHit = crit || forcesCrit;
-    const result = calculateDamage(props.moveData, props.user, props.target, props.battleState);
-    useEffect(() => {
-        setCrit(forcesCrit || props.moveData.criticalHit);
-    }, [props, forcesCrit]);
+    const crit = manualCrit || forcesCrit;
+    props.moveData.criticalHit = manualCrit;
+    const result = calculateDamage({ ...props.moveData, criticalHit: crit }, props.user, props.target, props.battleState);
 
     function getDmgNode() {
         if (result.minTotal && result.minPercentage && result.maxTotal && result.maxPercentage) {
@@ -149,10 +146,7 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                                     checked={crit}
                                     className="form-checkbox ml-1"
                                     disabled={forcesCrit}
-                                    onChange={() => {
-                                        setCrit(!crit);
-                                        props.moveData.criticalHit = !crit;
-                                    }}
+                                    onChange={() => setManualCrit(!manualCrit)}
                                 />
                             </div>
                         </div>
