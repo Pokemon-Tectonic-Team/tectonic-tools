@@ -233,9 +233,8 @@ export class Move {
         return "player";
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public forceCrit(user: PartyPokemon, target: PartyPokemon, battleState: BattleState): boolean {
-        return false;
+        return user.getActiveAbilities().some((a) => a.forceCrit(user, target, battleState));
     }
 
 

@@ -20,7 +20,7 @@ export class ConditionalCritMove extends Move {
     }
 
     public forceCrit(user: PartyPokemon, target: PartyPokemon, battleState: BattleState): boolean {
-        return this.condition(user, target, battleState);
+        return super.forceCrit(user, target, battleState) || this.condition(user, target, battleState);
     }
 
     static moveCodes = Object.keys(critConditions);

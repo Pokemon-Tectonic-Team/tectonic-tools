@@ -37,6 +37,11 @@ export class Ability {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public forceCrit(user: PartyPokemon, target: PartyPokemon, battleState: BattleState): boolean {
+        return false;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public movePowerMultiplier(move: MoveData, user: PartyPokemon, target: PartyPokemon, battleState: BattleState): number {
         return 1;
     }
