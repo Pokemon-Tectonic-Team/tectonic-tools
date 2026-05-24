@@ -20,6 +20,7 @@ import { WeatherCondition, weatherConditions } from "../data/conditions";
 import { Pokemon } from "../data/tectonic/Pokemon";
 import { TectonicData } from "../data/tectonic/TectonicData";
 import { Trainer } from "../data/tectonic/Trainer";
+import { MAX_LEVEL } from "../data/teamExport";
 import { PartyPokemon } from "../data/types/PartyPokemon";
 import MoveCard, { MoveData } from "./components/MoveCard";
 import SideStateUI from "./components/SideStateUI";
@@ -68,6 +69,12 @@ const PokemonDamageCalculator: NextPage = () => {
     const matchingTrainers = sortedTrainers.filter((x) =>
         x.displayName().toLowerCase().includes(trainerText.toLowerCase()),
     );
+
+    function getDefaultPlayerLevel(): number {
+        if (trainers.length === 0) return MAX_LEVEL;
+        const maxTrainerLevel = Math.max(...trainers.flatMap((t) => t.pokemon.map((p) => p.level)));
+        return Math.min(MAX_LEVEL, Math.max(15, Math.ceil(maxTrainerLevel / 5) * 5));
+    }
 
     function getBattleState(sideState: SideState): BattleState {
         const cancelWeather =
@@ -242,7 +249,7 @@ const PokemonDamageCalculator: NextPage = () => {
                             </FilterOptionButton>
                         </div>
                         {showTeamSearch && (
-                            <MiniDexFilter onMon={(mon) => setPlayerMon(new PartyPokemon({ species: mon }))} />
+                            <MiniDexFilter onMon={(mon) => setPlayerMon(new PartyPokemon({ species: mon, level: getDefaultPlayerLevel() }))} />
                         )}
                         {showTeamLoad && (
                             <SavedTeamManager
