@@ -1,0 +1,1 @@
+magick.exe mogrify -path output -crop 64x64+0+0 +repage *.png

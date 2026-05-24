@@ -1,4 +1,4 @@
-import { LoadedPokemon, PokemonEvolutionTerms } from "@/preload/loadedDataClasses";
+import { LoadedPokemon, PokemonEvolutionTerms } from "@/app/data/loadedDataClasses";
 import { calculateHP, calculateStat } from "../stats";
 import { TectonicData } from "../tectonic/TectonicData";
 import { NTreeArrayNode, NTreeNode } from "../types/NTreeNode";
@@ -56,7 +56,7 @@ export const zeroStylePoints: StylePoints = {
 function getterFactory<T extends keyof Pokemon, R>(
     mon: Pokemon,
     key: T,
-    isNull: (value: R) => boolean
+    isNull: (value: R) => boolean,
 ): (form: number) => R {
     return function (form: number = 0): R {
         if (
@@ -95,6 +95,7 @@ export class Pokemon {
     forms: Pokemon[] = [];
     items: [Item, number][] = [];
     uniqueItems: Item[] = [];
+    flags: string[] = [];
     evolutionTree: NTreeNode<PokemonEvolutionTerms> = null!;
 
     static NULL: Pokemon = null!;
@@ -127,6 +128,7 @@ export class Pokemon {
         this.pokedex = loaded.pokedex;
         this.items = loaded.wildItems.map((i) => [TectonicData.items[i.item], i.chance]);
         this.uniqueItems = uniq(this.items.map((x) => x[0]));
+        this.flags = loaded.flags;
         this.evolutionTree = NTreeArrayNode.buildTree(loaded.evolutionTreeArray!);
     }
 
@@ -163,9 +165,24 @@ export class Pokemon {
         this.forms = this.forms.concat(forms);
     }
 
+    get tutorableMoves(): Move[] {
+        const moveList = [];
+        if (this.flags.includes("TutorAny")) {
+            moveList.push(...TectonicData.moveFilterCaches.nonSignatureMoves);
+        } else {
+            if (!this.flags.includes("NoStaples")) {
+                moveList.push(...TectonicData.moveFilterCaches.stapleMoves);
+            }
+            moveList.push(...this.lineMoves);
+            moveList.push(...this.tutorMoves);
+        }
+        return uniq(moveList);
+    }
+
     public allMoves(currentForm: number = 0): Move[] {
-        const flatLevelMoves = this.getLevelMoves(currentForm).map((m) => m[1]);
-        return uniq(flatLevelMoves.concat(this.lineMoves, this.tutorMoves));
+        const moveList = this.getLevelMoves(currentForm).map((m) => m[1]);
+        moveList.push(...this.tutorableMoves);
+        return uniq(moveList);
     }
 
     public hasType(type: PokemonType): boolean {

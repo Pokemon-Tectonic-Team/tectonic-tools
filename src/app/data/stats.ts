@@ -17,9 +17,10 @@ function statMultiplierAtStep(step: number): number {
     return mult;
 }
 
-export function calculateHP(base: number, level: number, sv: number, stylish: boolean = false): number {
+export function calculateHP(base: number, level: number, sv: number, stylish: boolean = false, accumulation: boolean = false): number {
     if (base === 1) return 1; // For Shedinja
-    const pseudoLevel = 15.0 + level / 2.0;
+    const pseudoDivisor = accumulation ? 1.0 : 2.0;
+    const pseudoLevel = 15.0 + level / pseudoDivisor;
     const stylishMult = stylish ? 2.0 : 1.0;
     return Math.floor(
         ((base * 2.0 + sv * styleValueMult(level) * stylishMult) * pseudoLevel) / 100.0 + pseudoLevel + 10.0
@@ -31,10 +32,13 @@ export function calculateStat(
     level: number,
     sv: number,
     statSteps: number = 0,
-    stylish: boolean = false
+    stylish: boolean = false,
+    accumulation: boolean = false
 ): number {
-    const pseudoLevel = 15.0 + level / 2.0;
+    const pseudoDivisor = accumulation ? 1.0 : 2.0;
+    const pseudoLevel = 15.0 + level / pseudoDivisor;
     const stylishMult = stylish ? 2.0 : 1.0;
+    
     const normalStat = Math.floor(
         ((base * 2.0 + sv * styleValueMult(level) * stylishMult) * pseudoLevel) / 100.0 + 5.0
     );

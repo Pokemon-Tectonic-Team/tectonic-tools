@@ -1,13 +1,14 @@
 import { MoveData } from "@/app/damagecalc/components/MoveCard";
 import { Side } from "@/app/damagecalc/damageCalc";
 import { BattleState } from "@/app/data/battleState";
-import { LoadedMove } from "@/preload/loadedDataClasses";
+import { LoadedMove } from "@/app/data/loadedDataClasses";
+import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { MoveTypeChangeAbility } from "../abilities/MoveTypeChangeAbility";
 import { StatusEffect } from "../conditions";
 import { TectonicData } from "../tectonic/TectonicData";
 import { PartyPokemon } from "../types/PartyPokemon";
 import { isNull } from "../util";
-import { Pokemon, Stat } from "./Pokemon";
+import { Stat } from "./Pokemon";
 import { PokemonType } from "./PokemonType";
 
 export const moveCategories = ["Physical", "Special", "Status", "Adaptive"] as const;
@@ -38,6 +39,8 @@ displayableMoveFlags.add("Sound");
 displayableMoveFlags.add("Punch");
 displayableMoveFlags.add("Dance");
 displayableMoveFlags.add("Blade");
+// updated name for Blade tag on dev
+displayableMoveFlags.add("Slice");
 displayableMoveFlags.add("Biting");
 displayableMoveFlags.add("Bite");
 // kicking/kick has different tag names on live and dev
@@ -100,6 +103,11 @@ export class Move {
         return this.functionCode.includes("Recoil");
     }
 
+    public isBind(): boolean {
+        //  i think this is always BindTarget3
+        return this.functionCode.includes("BindTarget");
+    }
+
     public getTargetPositions(): boolean[][] {
         // Format is [[Foe, Foe], [User, Ally]]
         switch (this.target) {
@@ -146,8 +154,13 @@ export class Move {
         }
     }
 
-    public isSTAB(mon: Pokemon): boolean {
-        return mon.type1.name === this.type.name || mon.type2?.name === this.type.name;
+    public isSTAB(mon: PartyPokemon): boolean {
+        return (
+            this.type &&
+            (mon.types.type1 === this.type ||
+                mon.types.type2 === this.type ||
+                mon.getActiveAbilities().some((a) => a instanceof ExtraTypeAbility && a.extraType.id === this.type.id))
+        );
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -159,8 +172,11 @@ export class Move {
     // to be extended by subclasses
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public getType(user: PartyPokemon, battleState: BattleState): PokemonType {
-        if (user.ability instanceof MoveTypeChangeAbility && user.ability.shouldChangeType(this)) {
-            return user.ability.moveType;
+        // Check all active abilities for type-changing effects (supports Fragile Locket)
+        for (const ability of user.getActiveAbilities()) {
+            if (ability instanceof MoveTypeChangeAbility && ability.shouldChangeType(this)) {
+                return ability.moveType;
+            }
         }
         return this.type;
     }

@@ -1,4 +1,4 @@
-import { LoadedTrainerType } from "@/preload/loadedDataClasses";
+import { LoadedTrainerType } from "@/app/data/loadedDataClasses";
 
 export class TrainerType {
     id: string = "";

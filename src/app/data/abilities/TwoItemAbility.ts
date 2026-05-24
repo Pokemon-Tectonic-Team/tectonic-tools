@@ -1,4 +1,4 @@
-import { LoadedAbility } from "@/preload/loadedDataClasses";
+import { LoadedAbility } from "@/app/data/loadedDataClasses";
 import { Ability } from "../tectonic/Ability";
 import { Item } from "../tectonic/Item";
 import { isNull } from "../util";

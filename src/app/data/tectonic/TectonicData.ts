@@ -1,4 +1,4 @@
-import { LoadedData, LoadedDataJson, LoadedEncounterMap } from "@/preload/loadedDataClasses";
+import { LoadedData, LoadedDataJson, LoadedEncounterMap } from "@/app/data/loadedDataClasses";
 import loadedData from "public/data/loadedData.json";
 import { AttackMultBoostAbility } from "../abilities/AttackMultBoostAbility";
 import { BaseDamageBoostAbility } from "../abilities/BaseDamageBoostAbility";
@@ -7,6 +7,7 @@ import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { FasterBoostDamageAbility } from "../abilities/FasterBoostDamageAbility";
 import { ParanoidAbility } from "../abilities/ParanoidAbility";
 import { STABBoostAbility } from "../abilities/STABBoostAbility";
+import { StatModifyAbility } from "../abilities/StatModifyAbility";
 import { TwoItemAbility } from "../abilities/TwoItemAbility";
 import { TypeilateAbility } from "../abilities/TypeilateAbility";
 import { TypeImmunityAbility } from "../abilities/TypeImmunityAbility";
@@ -16,6 +17,7 @@ import { TypeWeaknessAbility } from "../abilities/TypeWeaknessAbility";
 import { CategoryBoostingItem } from "../items/CategoryBoostingItem";
 import { EvioliteItem } from "../items/EvioliteItem";
 import { FlatDamageBoostItem } from "../items/FlatDamageBoostItem";
+import { FragileLocketItem } from "../items/FragileLocketItem";
 import { LumberAxeItem } from "../items/LumberAxeItem";
 import { StatBoostItem } from "../items/StatBoostItem";
 import { StatLockItem } from "../items/StatLockItem";
@@ -63,7 +65,6 @@ import { PokemonType } from "./PokemonType";
 import { Trainer } from "./Trainer";
 import { TrainerType } from "./TrainerType";
 import { Tribe } from "./Tribe";
-import { StatModifyAbility } from "../abilities/StatModifyAbility";
 
 const data = loadedData as LoadedDataJson;
 const moveSubclasses = [
@@ -103,6 +104,7 @@ const itemSubclasses = [
     CategoryBoostingItem,
     EvioliteItem,
     FlatDamageBoostItem,
+    FragileLocketItem,
     LumberAxeItem,
     StatBoostItem,
     StatLockItem,
@@ -111,6 +113,7 @@ const itemSubclasses = [
     TypeBoostingItem,
     TypeChangingItem,
     WeatherImmuneItem,
+    FragileLocketItem,
 ];
 
 const abilitySubclasses = [
@@ -144,10 +147,12 @@ function fromLoadedArray<L extends LoadedData<L>, T>(load: Record<string, L[]>, 
 
 type TectonicDataType = {
     version: string;
+    isDev: boolean;
     types: Record<string, PokemonType>;
     tribes: Record<string, Tribe>;
     abilities: Record<string, Ability>;
     moves: Record<string, Move>;
+    moveFilterCaches: Record<string, Move[]>;
     items: Record<string, Item>;
     heldItems: Array<Item>;
     pokemon: Record<string, Pokemon>;
@@ -165,6 +170,7 @@ type TectonicDataType = {
 // To this end, the data not in-line loaded with TectonicData (left as {}) is done that way because it requires TectonicData to be instanciated first to populate
 export const TectonicData: TectonicDataType = {
     version: data.version,
+    isDev: data.version.includes("-dev"),
     types: fromLoaded(data.types, PokemonType),
     tribes: fromLoaded(data.tribes, Tribe),
     trainerTypes: fromLoaded(data.trainerTypes, TrainerType),
@@ -172,6 +178,7 @@ export const TectonicData: TectonicDataType = {
     typeChart: data.typeChart,
     abilities: {},
     moves: {},
+    moveFilterCaches: {},
     items: {},
     heldItems: [],
     pokemon: {},
@@ -195,6 +202,9 @@ TectonicData.moves = fromLoadedMapped(data.moves, (x) => {
     return subclass ? new subclass(x) : new Move(x);
 });
 Move.NULL = new Move();
+// these are some hefty filters potentially used a few times so may as well cache 'em
+TectonicData.moveFilterCaches.nonSignatureMoves = Object.values(TectonicData.moves).filter((m) => !m.isSignature);
+TectonicData.moveFilterCaches.stapleMoves = Object.values(TectonicData.moves).filter((m) => m.flags.includes("Staple"));
 
 TectonicData.items = fromLoadedMapped(data.items, (x) => {
     const subclass = itemSubclasses.find((sc) => sc.itemIds.includes(x.key));
@@ -212,4 +222,8 @@ Trainer.NULL = new Trainer();
 
 // Start of post-load population
 Object.entries(TectonicData.forms).forEach(([k, v]) => TectonicData.pokemon[k].addForms([Pokemon.NULL, ...v]));
-TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket == 5);
+if (TectonicData.isDev) {
+    TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket >= 9 && x.pocket <= 13);
+} else {
+    TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket == 5);
+}

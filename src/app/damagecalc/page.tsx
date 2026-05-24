@@ -32,7 +32,7 @@ enum SpeedOrderEnum {
 }
 
 const sortedTrainers = Object.values(TectonicData.trainers).sort(
-    (a, b) => Math.max(...a.pokemon.map((x) => x.level)) - Math.max(...b.pokemon.map((x) => x.level))
+    (a, b) => Math.max(...a.pokemon.map((x) => x.level)) - Math.max(...b.pokemon.map((x) => x.level)),
 );
 
 const PokemonDamageCalculator: NextPage = () => {
@@ -60,13 +60,13 @@ const PokemonDamageCalculator: NextPage = () => {
         !playerSpeed || !oppSpeed
             ? SpeedOrderEnum.NoDisplay
             : playerSpeed == oppSpeed
-            ? SpeedOrderEnum.Tie
-            : playerSpeed > oppSpeed
-            ? SpeedOrderEnum.Player
-            : SpeedOrderEnum.Opponent;
+              ? SpeedOrderEnum.Tie
+              : playerSpeed > oppSpeed
+                ? SpeedOrderEnum.Player
+                : SpeedOrderEnum.Opponent;
 
     const matchingTrainers = sortedTrainers.filter((x) =>
-        x.displayName().toLowerCase().includes(trainerText.toLowerCase())
+        x.displayName().toLowerCase().includes(trainerText.toLowerCase()),
     );
 
     function getBattleState(sideState: SideState): BattleState {
@@ -204,9 +204,9 @@ const PokemonDamageCalculator: NextPage = () => {
                             )}
                         <div className="w-fit h-fit overflow-auto mx-auto">
                             <div className="flex flex-wrap items-center mx-auto">
-                                {loadedParty.map((x) => (
+                                {loadedParty.map((x, index) => (
                                     <ImageFallback
-                                        key={x.species.id}
+                                        key={`${x.species.id}-${index}`}
                                         className="hover:bg-yellow-highlight cursor-pointer"
                                         src={x.species.getIcon()}
                                         alt={x.species.name}
@@ -314,11 +314,11 @@ const PokemonDamageCalculator: NextPage = () => {
                                         </span>
                                     </div>
                                 )}
-                                {trainer.pokemon.map((x) => (
+                                {trainer.pokemon.map((x, index) => (
                                     <ImageFallback
-                                        key={x.pokemon.id}
+                                        key={`${x.pokemon.id}-${index}`}
                                         className={`hover:bg-yellow-highlight cursor-pointer`}
-                                        src={x.pokemon.getIcon()}
+                                        src={x.pokemon.getIcon(x.form)}
                                         alt={x.pokemon.name}
                                         width={64}
                                         height={64}
@@ -327,6 +327,7 @@ const PokemonDamageCalculator: NextPage = () => {
                                             setOpponentMon(
                                                 new PartyPokemon({
                                                     species: x.pokemon,
+                                                    form: x.form,
                                                     level: x.level,
                                                     stylePoints: x.sp,
                                                     moves: [...x.moves],
@@ -334,7 +335,7 @@ const PokemonDamageCalculator: NextPage = () => {
                                                     itemType: x.itemType,
                                                     ability: x.ability,
                                                     nickname: x.nickname,
-                                                })
+                                                }),
                                             )
                                         }
                                         onContextMenu={() => setModalMon(x.pokemon)}

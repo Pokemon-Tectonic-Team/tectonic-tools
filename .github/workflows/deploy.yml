@@ -1,0 +1,37 @@
+name: Deploy to Azure
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Deploy Both Sites
+              uses: appleboy/ssh-action@v1.0.0
+              with:
+                  host: ${{ secrets.AZURE_HOST }}
+                  username: ${{ secrets.AZURE_USERNAME }}
+                  key: ${{ secrets.AZURE_SSH_KEY }}
+                  script: |
+                      # Deploy Production Build
+                      cd /var/www/tectonic-prod
+                      git restore public/data/loadedData.json public/data/pokePartyMappedEncodings.json 2>/dev/null || true
+                      git pull origin main
+                      npm ci
+                      npm run build
+                      pm2 restart tectonic-prod
+
+                      # Deploy Dev Build
+                      cd /var/www/tectonic-dev
+                      git restore public/data/loadedData.json public/data/pokePartyMappedEncodings.json 2>/dev/null || true
+                      git pull origin main
+                      npm ci
+                      npm run build-dev
+                      pm2 restart tectonic-dev
+
+                      # Save PM2 configuration
+                      pm2 save

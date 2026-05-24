@@ -1,33 +1,34 @@
 {
-    "name": "tectonic-damage-calc",
-    "version": "0.1.0",
-    "private": true,
-    "scripts": {
-        "dev": "next dev --turbopack",
-        "build": "next build",
-        "build-dev": "tsx src/preload/loadTectonicRepoData.ts dev && next build",
-        "start": "next start",
-        "lint": "next lint",
-        "data": "tsx src/preload/loadTectonicRepoData.ts"
-    },
-    "dependencies": {
-        "@vercel/analytics": "^1.5.0",
-        "next": "^15.3.0",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
-        "tectonic-damage-calc": "file:"
-    },
-    "devDependencies": {
-        "@eslint/eslintrc": "^3",
-        "@tailwindcss/postcss": "^4.1.4",
-        "@types/node": "^20",
-        "@types/react": "^19",
-        "@types/react-dom": "^19",
-        "eslint": "^9",
-        "eslint-config-next": "15.2.2",
-        "postcss": "^8.5.3",
-        "tailwindcss": "^4.1.4",
-        "tsx": "^4.19.3",
-        "typescript": "^5"
-    }
+  "name": "tectonic-damage-calc",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "tsx src/preload/downloadData.ts && next build",
+    "build-dev": "tsx src/preload/downloadData.ts dev && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "data": "tsx src/preload/downloadData.ts",
+    "data:dev": "tsx src/preload/downloadData.ts dev"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.5.0",
+    "next": "15.3.8",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tectonic-damage-calc": "file:"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4.1.4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.2",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.4",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
+  }
 }

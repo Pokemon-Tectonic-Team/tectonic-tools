@@ -1,5 +1,5 @@
 import { BattleState } from "@/app/data/battleState";
-import { LoadedMove } from "@/preload/loadedDataClasses";
+import { LoadedMove } from "@/app/data/loadedDataClasses";
 import { Move } from "../tectonic/Move";
 import { PartyPokemon } from "../types/PartyPokemon";
 

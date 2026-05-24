@@ -105,7 +105,7 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                     props.moveData.move.getType(props.user, props.battleState),
                     "bg",
                     "bg"
-                )} ${props.moveData.move.isSTAB(props.user.species) ? "font-bold" : ""} ${
+                )} ${props.moveData.move.isSTAB(props.user) ? "font-bold" : ""} ${
                     props.moveData.move.isSignature ? "text-yellow-300" : ""
                 }`}
                 title={props.moveData.move.description}

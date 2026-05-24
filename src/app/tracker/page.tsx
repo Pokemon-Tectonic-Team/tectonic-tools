@@ -5,7 +5,7 @@ import ImageFallback from "@/components/ImageFallback";
 import PageHeader, { PageType } from "@/components/PageHeader";
 import PokemonModal from "@/components/PokemonModal";
 import CloseXButton from "@/components/svg_icons/CloseXButton";
-import { LoadedEncounterMap, LoadedEncounterTable } from "@/preload/loadedDataClasses";
+import { LoadedEncounterMap, LoadedEncounterTable } from "@/app/data/loadedDataClasses";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -81,7 +81,7 @@ class EncounterDisplayData {
         this.tableDisplayName = tableDisplayNameMap[table.type] ?? "Unknown Table Type";
         this.minLevel = 10000;
         this.maxLevel = -1;
-        this.levelCap = table.levelCap;
+        this.levelCap = table.normalLevelCap;
         this.displayMonData = [];
 
         const itemsMap: Record<string, Item> = {};
@@ -98,7 +98,7 @@ class EncounterDisplayData {
         }
 
         this.displayMonData = this.displayMonData.sort(([, displayA], [, displayB]) =>
-            displayA.name.localeCompare(displayB.name)
+            displayA.name.localeCompare(displayB.name),
         );
         this.items = Object.values(itemsMap);
     }
@@ -171,7 +171,7 @@ const EncounterTracker: NextPage = () => {
                                 onClick={() => {
                                     Playthrough.getPlayThrough(selectedPlaythroughId)!.setPickMissed(
                                         data.key,
-                                        !flagMissing
+                                        !flagMissing,
                                     );
                                     setLoaded(false);
                                 }}
@@ -313,8 +313,8 @@ const EncounterTracker: NextPage = () => {
                                     m.filter(
                                         locationFilter.toLocaleLowerCase(),
                                         showIncompleteOnly,
-                                        Playthrough.getPlayThrough(selectedPlaythroughId)!
-                                    )
+                                        Playthrough.getPlayThrough(selectedPlaythroughId)!,
+                                    ),
                                 )
                                 .map((m) => (
                                     <div key={m.name} className="w-full md:w-150 border rounded-2xl p-2 mx-auto">

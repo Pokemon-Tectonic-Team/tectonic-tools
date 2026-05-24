@@ -1,4 +1,4 @@
-import { LoadedTrainer } from "@/preload/loadedDataClasses";
+import { LoadedTrainer } from "@/app/data/loadedDataClasses";
 import { TectonicData } from "../tectonic/TectonicData";
 import { isNull } from "../util";
 import { Ability } from "./Ability";
@@ -9,6 +9,7 @@ import { PokemonType } from "./PokemonType";
 
 export interface TrainerPokemon {
     pokemon: Pokemon;
+    form: number;
     sp: StylePoints;
     level: number;
     nickname?: string;
@@ -76,16 +77,19 @@ export class Trainer {
                 }
                 monMoves = newMoves.reverse();
             }
-            const abilityIndex = mon.abilityIndex || 0;
+            const abilityIndex = mon.abilityIndex ?? 0;
+            const form = mon.form ?? 0;
+            const species = TectonicData.pokemon[mon.id];
             const finalMon: TrainerPokemon = {
                 ...mon,
-                pokemon: TectonicData.pokemon[mon.id],
+                pokemon: species,
+                form,
                 nickname: mon.name,
                 sp:
                     mon.sp.length === 0
                         ? defaultStylePoints
                         : { hp: mon.sp[0], attacks: mon.sp[1], defense: mon.sp[2], speed: mon.sp[3], spdef: mon.sp[5] },
-                ability: TectonicData.pokemon[mon.id].abilities[abilityIndex],
+                ability: species.getAbilities(form)[abilityIndex],
                 moves: monMoves,
                 items: [TectonicData.items[mon.items[0]] || Item.NULL, TectonicData.items[mon.items[1]] || Item.NULL],
                 itemType: PokemonType.NULL, // override the string from the unpack above

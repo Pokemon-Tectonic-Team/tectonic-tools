@@ -1,4 +1,4 @@
-import { LoadedTribe } from "@/preload/loadedDataClasses";
+import { LoadedTribe } from "@/app/data/loadedDataClasses";
 
 export class Tribe {
     id: string = "";

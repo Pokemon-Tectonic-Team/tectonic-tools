@@ -1,5 +1,5 @@
 import { MoveData } from "@/app/damagecalc/components/MoveCard";
-import { LoadedAbility } from "@/preload/loadedDataClasses";
+import { LoadedAbility } from "@/app/data/loadedDataClasses";
 import { BattleState } from "../battleState";
 import { PartyPokemon } from "../types/PartyPokemon";
 import { Stats } from "./Pokemon";

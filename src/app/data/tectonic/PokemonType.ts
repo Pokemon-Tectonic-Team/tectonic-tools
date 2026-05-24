@@ -1,4 +1,4 @@
-import { LoadedType } from "@/preload/loadedDataClasses";
+import { LoadedType } from "@/app/data/loadedDataClasses";
 
 export class PokemonType {
     id: string = "";

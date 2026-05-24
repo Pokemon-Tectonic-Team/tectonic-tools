@@ -1,4 +1,4 @@
-import { LoadedAbility } from "@/preload/loadedDataClasses";
+import { LoadedAbility } from "@/app/data/loadedDataClasses";
 import { TectonicData } from "../tectonic/TectonicData";
 import { MatchupModifyAbility } from "./MatchupModifyAbility";
 

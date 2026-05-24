@@ -1,5 +1,4 @@
 import { BattleState } from "@/app/data/battleState";
-import { ExtraTypeAbility } from "../data/abilities/ExtraTypeAbility";
 import { STABBoostAbility } from "../data/abilities/STABBoostAbility";
 import { WeatherImmuneItem } from "../data/items/WeatherImmuneItem";
 import { MultiHitMove } from "../data/moves/MultiHitMove";
@@ -186,9 +185,11 @@ function pbCalcAbilityDamageMultipliers(
     //     multipliers.base_damage_multiplier *= 1.4;
     // }
 
-    // User or user ally ability effects that alter damage
-    multipliers.base_damage_multiplier *= user.ability.movePowerMultiplier(move, user, target);
-    multipliers.attack_multiplier *= user.ability.attackMultiplier(move, user, battleState);
+    // User or user ally ability effects that alter damage (apply all active abilities for Fragile Locket)
+    for (const ability of user.getActiveAbilities()) {
+        multipliers.base_damage_multiplier *= ability.movePowerMultiplier(move, user, target);
+        multipliers.attack_multiplier *= ability.attackMultiplier(move, user, battleState);
+    }
     // user.eachAlly((b: any) => {
     //     b.eachAbilityShouldApply(aiCheck, (ability: any) => {
     //         BattleHandlers.triggerDamageCalcUserAllyAbility(
@@ -240,8 +241,8 @@ function applySunDebuff(move: MoveData, user: PartyPokemon, battleState: BattleS
     if (user.items.some((i) => i instanceof WeatherImmuneItem)) {
         return false;
     }
-    // i'm not 100% sure we're actually passing ability flags yet, i'll check when we get to implementing abilitites
-    if (user.ability.flags.includes("SunshineSynergy") || user.ability.flags.includes("AllWeatherSynergy")) {
+    // Check all active abilities for weather synergy (supports Fragile Locket)
+    if (user.getActiveAbilities().some((a) => a.flags.includes("SunshineSynergy") || a.flags.includes("AllWeatherSynergy"))) {
         return false;
     }
     if (user.types.type1.id === "FIRE" || user.types.type2?.id === "FIRE" || user.types.type1.id === "GRASS" || user.types.type2?.id === "GRASS") {
@@ -257,7 +258,8 @@ function applyRainDebuff(move: MoveData, user: PartyPokemon, battleState: Battle
     if (user.items.some((i) => i instanceof WeatherImmuneItem)) {
         return false;
     }
-    if (user.ability.flags.includes("RainstormSynergy") || user.ability.flags.includes("AllWeatherSynergy")) {
+    // Check all active abilities for weather synergy (supports Fragile Locket)
+    if (user.getActiveAbilities().some((a) => a.flags.includes("RainstormSynergy") || a.flags.includes("AllWeatherSynergy"))) {
         return false;
     }
     if (user.types.type1.id === "WATER" || user.types.type2?.id === "WATER" || user.types.type1.id === "ELECTRIC" || user.types.type2?.id === "ELECTRIC") {
@@ -343,6 +345,20 @@ function pbCalcWeatherDamageMultipliers(
                 multipliers.final_damage_multiplier *= 1 + damageBonus;
             }
             break;
+        case "Sandstorm": {
+            const trueCategory = move.move.getDamageCategory(move, user, target);
+            if (target.hasType("ROCK") && move.move.getDefendingStat(trueCategory) === "spdef") {
+                multipliers.defense_multiplier *= 1.5;
+            }
+            break;
+        }
+        case "Hail": {
+            const trueCategory = move.move.getDamageCategory(move, user, target);
+            if (target.hasType("ICE") && move.move.getDefendingStat(trueCategory) === "defense") {
+                multipliers.defense_multiplier *= 1.5;
+            }
+            break;
+        }
     }
     return multipliers;
 }
@@ -534,11 +550,8 @@ function pbCalcTypeBasedDamageMultipliers(
     //     stabActive = anyPartyMemberHasType;
     // } else {
     const type = move.move.getType(user, battleState);
-    stabActive =
-        type &&
-        (user.species.getType1(user.form) === type ||
-            user.species.getType2(user.form) === type ||
-            (user.ability instanceof ExtraTypeAbility && user.ability.extraType.id === type.id));
+    stabActive = move.move.isSTAB(user);
+
     //}
     // TODO: Handle curses
     // stabActive = stabActive && !(user.pbOwnedByPlayer() && battle.curses.includes("DULLED"));
@@ -548,8 +561,11 @@ function pbCalcTypeBasedDamageMultipliers(
     // STAB
     if (stabActive) {
         let stab = 1.5;
-        if (user.ability instanceof STABBoostAbility) {
-            stab *= user.ability.boost;
+        // Check all active abilities for STAB boost (supports Fragile Locket)
+        for (const ability of user.getActiveAbilities()) {
+            if (ability instanceof STABBoostAbility) {
+                stab *= ability.boost;
+            }
         }
         multipliers.final_damage_multiplier *= stab;
     }
@@ -557,8 +573,8 @@ function pbCalcTypeBasedDamageMultipliers(
     // Type effectiveness
     // variable type moves are handled here in Tectonic, but on the data level here
     const effectiveness = calcTypeMatchup(
-        { type: type, move: move.move, ability: user.ability },
-        { type1: target.types.type1, type2: target.types.type2, ability: target.ability }
+        { type: type, move: move.move, abilities: user.getActiveAbilities() },
+        { type1: target.types.type1, type2: target.types.type2, abilities: target.getActiveAbilities() }
     );
     multipliers.final_damage_multiplier *= effectiveness;
 
@@ -767,6 +783,9 @@ function calcDamageMultipliers(
     //if (!(this instanceof PokeBattle_Confusion) && !(this instanceof PokeBattle_Charm)) {
     multipliers.final_damage_multiplier *= 0.9;
     //}
+
+    // Custom damage multiplier for simulating unsupported effects
+    multipliers.final_damage_multiplier *= battleState.sideState.customDamageMultiplier;
 
     // TODO: Move-specific final damage modifiers
     //multipliers.final_damage_multiplier = pbModifyDamage(multipliers.final_damage_multiplier, user, target);

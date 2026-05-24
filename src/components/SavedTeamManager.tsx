@@ -1,113 +1,43 @@
-import { Playthrough } from "@/app/data/playthrough";
-import { decodeTeam, encodeTeam, MAX_LEVEL } from "@/app/data/teamExport";
-import { Ability } from "@/app/data/tectonic/Ability";
-import { Item } from "@/app/data/tectonic/Item";
-import { Move } from "@/app/data/tectonic/Move";
+import { PokePartyEncoding, PokePartyEncodingType } from "@/app/data/pokeparty";
 import { Pokemon } from "@/app/data/tectonic/Pokemon";
-import { PokemonType } from "@/app/data/tectonic/PokemonType";
 import { TectonicData } from "@/app/data/tectonic/TectonicData";
 import { PartyPokemon } from "@/app/data/types/PartyPokemon";
 import { JSX, useCallback, useEffect, useState } from "react";
 import BasicButton from "./BasicButton";
+import DownloadFileButton from "./DownloadFileButton";
 
-const teamManagementLocalStorageKey = "TeamManagementLocalStorageKey_V1";
-const teamManagementMigrationsLocalStorageKey = "TeamManagementMigrationsLocalStorageKey_V1";
+const teamManagementLocalStorageKeyV1 = "TeamManagementLocalStorageKey_V1";
+const pokePartyLocalStorageV1 = "PokePartyLocalStorageKey_V1";
 
-function getSavedTeamCodes(): Record<string, string> {
-    const base64TeamsString = localStorage.getItem(teamManagementLocalStorageKey);
+function getSavedTeamCodes(versionKey: string): Record<string, string> {
+    const base64TeamsString = localStorage.getItem(versionKey);
     const base64Teams: Record<string, string> = base64TeamsString ? JSON.parse(base64TeamsString) : {};
 
     return base64Teams;
 }
 
-function saveTeamCodes(codes: Record<string, string>): void {
-    localStorage.setItem(teamManagementLocalStorageKey, JSON.stringify(codes));
-}
-
-function legacyLoadOfSavedTeams() {
-    // We've already migrated if this is present, no need to do it again
-    if (teamManagementMigrationsLocalStorageKey in localStorage) {
-        return;
-    }
-
-    // Legacy handling for saved team codes not saved under the grouped local storage key
-    const migrations: Record<string, string> = {};
-    for (const key in localStorage) {
-        if (key != Playthrough.localStorageKey) {
-            // Everything that is not a playthrough is a saved JSON team - move it to the migrations key for further processing
-            const jsonTeam = localStorage.getItem(key);
-            if (jsonTeam) {
-                migrations[key] = jsonTeam;
-            }
-        }
-    }
-
-    if (Object.keys(migrations).length > 0) {
-        localStorage.setItem(teamManagementMigrationsLocalStorageKey, JSON.stringify(migrations));
-    }
+function saveTeamCodes(versionKey: string, codes: Record<string, string>): void {
+    localStorage.setItem(versionKey, JSON.stringify(codes));
 }
 
 // Trys to migrate saved teams to the base64 grouped key local storage area.
 // If someone has an error the idea is we release a fix then we can direct them to run this function from console
 export function performSavedLegacyTeamMigrations(forceTry: boolean = false) {
-    interface LegacySavedPartyPokemon {
-        pokemon: keyof typeof TectonicData.pokemon;
-        moves: Array<keyof typeof TectonicData.moves>;
-        ability: keyof typeof TectonicData.abilities;
-        items: Array<keyof typeof TectonicData.items>;
-        itemType?: keyof typeof TectonicData.types;
-        form: number;
-        level: number;
-        sp: number[];
-    }
-
-    function legacyLoadTeamFromData(data: LegacySavedPartyPokemon[]) {
-        return data.map((c) => {
-            // fall back to defaults for newly added fields
-            const level = c.level || MAX_LEVEL;
-            const sp = c.sp || [10, 10, 10, 10, 10];
-            return new PartyPokemon({
-                species: TectonicData.pokemon[c.pokemon] || Pokemon.NULL,
-                moves: c.moves.map((m) => TectonicData.moves[m] || Move.NULL),
-                ability: TectonicData.abilities[c.ability] || Ability.NULL,
-                items: c.items.map((i) => TectonicData.items[i] || Item.NULL),
-                itemType: c.itemType ? TectonicData.types[c.itemType] || PokemonType.NULL : PokemonType.NULL,
-                form: c.form,
-                level: level,
-                stylePoints: {
-                    hp: sp[0],
-                    attacks: sp[1],
-                    defense: sp[2],
-                    spdef: sp[3],
-                    speed: sp[4],
-                },
-            });
-        });
-    }
-
-    // Migrate when there are migrations & forced or when the migration has not happened yet
     if (
-        !(teamManagementMigrationsLocalStorageKey in localStorage) ||
-        (!forceTry && teamManagementLocalStorageKey in localStorage)
+        !(teamManagementLocalStorageKeyV1 in localStorage) || // Don't migrate if there is nothing to migrate
+        (!forceTry && pokePartyLocalStorageV1 in localStorage) // Don't migrate if there are somehow new teams already
     ) {
         return;
     }
 
-    const jsonTeams = JSON.parse(localStorage.getItem(teamManagementMigrationsLocalStorageKey)!);
-    const teamCodes = getSavedTeamCodes();
+    const oldTeams = getSavedTeamCodes(teamManagementLocalStorageKeyV1);
+    const newTeams: Record<string, string> = {};
 
-    Object.keys(jsonTeams).forEach((k) => {
-        const jsonTeam: string = jsonTeams[k];
-        try {
-            teamCodes[k] = encodeTeam(legacyLoadTeamFromData(JSON.parse(jsonTeam) as LegacySavedPartyPokemon[]));
-            saveTeamCodes(teamCodes);
-        } catch (e) {
-            console.error(e);
-            alert(
-                `Unable to migrate team: ${k}. The team is not lost, but you'll need a devs help to retry.\nPlease post the error in the Tectonic Discord Website Issues.\n${e}`
-            );
-        }
+    Object.keys(oldTeams).forEach((k) => {
+        const oldTeam = PokePartyEncoding.decode(oldTeams[k]);
+        newTeams[k] = PokePartyEncoding.encode(oldTeam);
     });
+    saveTeamCodes(pokePartyLocalStorageV1, newTeams);
 }
 
 export default function SavedTeamManager({
@@ -122,7 +52,7 @@ export default function SavedTeamManager({
     const [savedTeamCodes, setSavedTeamCodes] = useState<Record<string, string>>({});
 
     function exportTeam() {
-        const code = encodeTeam(exportMons!);
+        const code = PokePartyEncoding.encode(exportMons!);
         setTeamCode(code);
 
         navigator.clipboard.writeText(code);
@@ -139,7 +69,7 @@ export default function SavedTeamManager({
 
         try {
             setTeamCode(code);
-            onLoad(decodeTeam(code).filter((x) => x.species != Pokemon.NULL));
+            onLoad(PokePartyEncoding.decode(code).filter((x) => x.species != Pokemon.NULL));
             if (showAlert) {
                 alert("Team imported successfully!");
             }
@@ -156,9 +86,9 @@ export default function SavedTeamManager({
         }
 
         const newCodes = { ...savedTeamCodes };
-        newCodes[saveTeamName] = encodeTeam(exportMons!);
+        newCodes[saveTeamName] = PokePartyEncoding.encode(exportMons!);
 
-        saveTeamCodes(newCodes);
+        saveTeamCodes(pokePartyLocalStorageV1, newCodes);
         setSavedTeamCodes(newCodes);
         alert("Saved!");
     }
@@ -167,7 +97,7 @@ export default function SavedTeamManager({
         const newCodes = { ...savedTeamCodes };
         delete newCodes[saveTeamName];
 
-        saveTeamCodes(newCodes);
+        saveTeamCodes(pokePartyLocalStorageV1, newCodes);
         setSavedTeamCodes(newCodes);
         setSaveTeamName("");
     }
@@ -181,9 +111,8 @@ export default function SavedTeamManager({
             importTeamCallback(code, false);
         }
 
-        legacyLoadOfSavedTeams();
         performSavedLegacyTeamMigrations();
-        setSavedTeamCodes(getSavedTeamCodes());
+        setSavedTeamCodes(getSavedTeamCodes(pokePartyLocalStorageV1));
     }, [importTeamCallback]);
 
     return (
@@ -200,6 +129,14 @@ export default function SavedTeamManager({
                 <div className="flex gap-2">
                     <BasicButton onClick={() => importTeam(teamCode)}>Import</BasicButton>
                     {exportMons && <BasicButton onClick={exportTeam}>Export</BasicButton>}
+                    {TectonicData.isDev && exportMons && (
+                        <DownloadFileButton
+                            filename="teamcode.txt"
+                            generateContent={() => PokePartyEncoding.encode(exportMons!, PokePartyEncodingType.Full)}
+                        >
+                            Export for Tectonic
+                        </DownloadFileButton>
+                    )}
                 </div>
             </div>
 

@@ -23,9 +23,10 @@ export interface PokemonModalProps {
     pokemon: Pokemon | null;
     moveSelector?: ((m: Move) => void) | null;
     handlePokemonClick: (pokemon: Pokemon | null) => void;
+    initialForm?: number;
 }
 
-const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector, handlePokemonClick }) => {
+const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector, handlePokemonClick, initialForm }) => {
     const tabs = moveSelector
         ? ["Level Moves", "Tutor Moves", "All Moves"]
         : (["Info", "Evolutions & Locations", "Level Moves", "Tutor Moves"] as const);
@@ -36,16 +37,16 @@ const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector,
     const [currentPokemon, setCurrentPokemon] = useState(mon);
     const [selectedDefAbility, setSelectedDefAbility] = useState<Ability>(currentPokemon?.abilities[0] ?? Ability.NULL);
     const [selectedStabAbility, setSelectedStabAbility] = useState<Ability>(
-        currentPokemon?.abilities[0] ?? Ability.NULL
+        currentPokemon?.abilities[0] ?? Ability.NULL,
     );
     const [activeTab, setActiveTab] = useState<PokemonTabName>(moveSelector ? "Level Moves" : "Info");
-    const [currentForm, setCurrentForm] = useState<number>(0);
+    const [currentForm, setCurrentForm] = useState<number>(initialForm ?? 0);
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (mon) {
             setCurrentPokemon(mon);
-            setCurrentForm(0);
+            setCurrentForm(initialForm ?? 0);
             setSelectedDefAbility(mon.abilities[0]);
             setSelectedStabAbility(mon.abilities[0]);
             setIsRendered(true);
@@ -57,7 +58,7 @@ const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector,
             }, 10);
             document.body.style.overflow = "hidden"; // Disable scrolling
         }
-    }, [mon]);
+    }, [mon, initialForm]);
 
     const handleClose = () => {
         document.body.style.overflow = ""; // Re-enable scrolling
@@ -90,16 +91,16 @@ const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector,
                 {
                     type1: currentPokemon.getType1(currentForm),
                     type2: currentPokemon.getType2(currentForm),
-                    ability: a,
-                }
+                    abilities: [a],
+                },
             );
 
             stabMatchupCalcs[a.id][t.id] = Math.max(
-                calcTypeMatchup({ type: currentPokemon.getType1(currentForm), ability: a }, { type1: t }),
+                calcTypeMatchup({ type: currentPokemon.getType1(currentForm), abilities: [a] }, { type1: t }),
                 calcTypeMatchup(
-                    { type: currentPokemon.getType2(currentForm) || currentPokemon.getType1(currentForm), ability: a },
-                    { type1: t }
-                )
+                    { type: currentPokemon.getType2(currentForm) || currentPokemon.getType1(currentForm), abilities: [a] },
+                    { type1: t },
+                ),
             );
 
             defMatchupDifferentForAbilities ||=
@@ -162,7 +163,7 @@ const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector,
                                                 buttonsVisible={true}
                                                 onPrevClick={() =>
                                                     setCurrentForm(
-                                                        negativeMod(currentForm - 1, currentPokemon.forms.length)
+                                                        negativeMod(currentForm - 1, currentPokemon.forms.length),
                                                     )
                                                 }
                                                 onNextClick={() =>
@@ -256,7 +257,7 @@ const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector,
                                             onClick={() =>
                                                 setSelectedDefAbility(
                                                     currentPokemon.abilities.find((a) => a != selectedDefAbility) ??
-                                                        selectedDefAbility
+                                                        selectedDefAbility,
                                                 )
                                             }
                                         >
@@ -294,7 +295,7 @@ const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector,
                                             onClick={() =>
                                                 setSelectedStabAbility(
                                                     currentPokemon.abilities.find((a) => a != selectedStabAbility) ??
-                                                        selectedStabAbility
+                                                        selectedStabAbility,
                                                 )
                                             }
                                         >
@@ -408,7 +409,7 @@ const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon: mon, moveSelector,
                         </TabContent>
                         <TabContent tab="Tutor Moves" activeTab={activeTab}>
                             <MoveTable
-                                moves={currentPokemon.lineMoves.concat(currentPokemon.tutorMoves).map((x) => [0, x])}
+                                moves={currentPokemon.tutorableMoves.map((x) => [0, x])}
                                 showLevel={false}
                                 onMoveClick={(m) => {
                                     if (moveSelector) {
