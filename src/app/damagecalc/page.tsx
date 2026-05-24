@@ -342,7 +342,10 @@ const PokemonDamageCalculator: NextPage = () => {
                                                 className="ml-1 text-red-400 hover:text-red-200 font-bold text-xl leading-none"
                                                 onClick={() => {
                                                     setTrainers(trainers.filter((_, i) => i !== trainerIndex));
-                                                    if (activeTrainer === t) setActiveTrainer(null);
+                                                    if (activeTrainer === t) {
+                                                        setActiveTrainer(null);
+                                                        setOpponentMon(null);
+                                                    }
                                                 }}
                                                 title="Remove trainer"
                                             >
@@ -428,7 +431,6 @@ const PokemonDamageCalculator: NextPage = () => {
                                                 onClick={() => {
                                                     if (trainers.length < 3) {
                                                         setTrainers([...trainers, x]);
-                                                        setOpponentMon(null);
                                                     }
                                                 }}
                                             >
