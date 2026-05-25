@@ -6,7 +6,7 @@ import { getTypeColorClass } from "@/components/colours";
 import ImageFallback from "@/components/ImageFallback";
 import TypeBadge, { TypeBadgeElementEnum } from "@/components/TypeBadge";
 import { getColourClassForMult, getEffectiveMessageForMult, getTextColourForMult } from "@/components/TypeChartCell";
-import { Fragment, ReactNode, useEffect, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import { calculateDamage } from "../damageCalc";
 
 export interface MoveData {
@@ -23,13 +23,15 @@ export interface MoveCardProps {
 }
 
 export default function MoveCard(props: MoveCardProps): ReactNode {
-    const [crit, setCrit] = useState<boolean>(props.target.volatileStatusEffects.Jinx || props.moveData.criticalHit);
+    const forcesCrit =
+        props.moveData.move.forceCrit(props.user, props.target, props.battleState) ||
+        props.target.volatileStatusEffects.Jinx;
+    const [manualCrit, setManualCrit] = useState<boolean>(props.moveData.criticalHit);
     const [customInput, setCustomInput] = useState<unknown>(props.moveData.customVar);
 
-    const result = calculateDamage(props.moveData, props.user, props.target, props.battleState);
-    useEffect(() => {
-        setCrit(props.target.volatileStatusEffects.Jinx || props.moveData.criticalHit);
-    }, [props]);
+    const crit = manualCrit || forcesCrit;
+    props.moveData.criticalHit = manualCrit;
+    const result = calculateDamage({ ...props.moveData, criticalHit: crit }, props.user, props.target, props.battleState);
 
     function getDmgNode() {
         if (result.minTotal && result.minPercentage && result.maxTotal && result.maxPercentage) {
@@ -56,8 +58,9 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
     function getCustomVarInput(): ReactNode {
         if (props.moveData.move.customVarType === "number") {
             if (customInput === undefined) {
-                setCustomInput(0);
-                props.moveData.customVar = 0;
+                const defaultVal = props.moveData.move.getDefaultCustomVar(props.user, props.target, props.battleState) ?? 0;
+                setCustomInput(defaultVal);
+                props.moveData.customVar = defaultVal;
             }
             return (
                 <div className="flex text-center">
@@ -142,11 +145,8 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                                     type="checkbox"
                                     checked={crit}
                                     className="form-checkbox ml-1"
-                                    disabled={props.target.volatileStatusEffects.Jinx}
-                                    onChange={() => {
-                                        setCrit(!crit);
-                                        props.moveData.criticalHit = !crit;
-                                    }}
+                                    disabled={forcesCrit}
+                                    onChange={() => setManualCrit(!manualCrit)}
                                 />
                             </div>
                         </div>

@@ -3,8 +3,12 @@ import loadedData from "public/data/loadedData.json";
 import { AttackMultBoostAbility } from "../abilities/AttackMultBoostAbility";
 import { BaseDamageBoostAbility } from "../abilities/BaseDamageBoostAbility";
 import { CancelWeatherAbility } from "../abilities/CancelWeatherAbility";
+import { ConditionalCritAbility } from "../abilities/ConditionalCritAbility";
+import { DefensiveDamageAbility } from "../abilities/DefensiveDamageAbility";
+import { DisguiseAbility } from "../abilities/DisguiseAbility";
 import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { FasterBoostDamageAbility } from "../abilities/FasterBoostDamageAbility";
+import { OffensiveDamageBoostAbility } from "../abilities/OffensiveDamageBoostAbility";
 import { ParanoidAbility } from "../abilities/ParanoidAbility";
 import { STABBoostAbility } from "../abilities/STABBoostAbility";
 import { StatModifyAbility } from "../abilities/StatModifyAbility";
@@ -14,6 +18,7 @@ import { TypeImmunityAbility } from "../abilities/TypeImmunityAbility";
 import { TypeImmunityWeaknessAbility } from "../abilities/TypeImmunityWeaknessAbility";
 import { TypeResistAbility } from "../abilities/TypeResistAbility";
 import { TypeWeaknessAbility } from "../abilities/TypeWeaknessAbility";
+import { WeatherStatAbility } from "../abilities/WeatherStatAbility";
 import { CategoryBoostingItem } from "../items/CategoryBoostingItem";
 import { EvioliteItem } from "../items/EvioliteItem";
 import { FlatDamageBoostItem } from "../items/FlatDamageBoostItem";
@@ -26,21 +31,20 @@ import { SuperEffectiveResistItem } from "../items/SuperEffectiveResistItem";
 import { TypeBoostingItem } from "../items/TypeBoostingItem";
 import { TypeChangingItem } from "../items/TypeChangingItem";
 import { WeatherImmuneItem } from "../items/WeatherImmuneItem";
+import { ConditionalCritMove } from "../moves/ConditionalCritMove";
 import { AllyDefScalingMove } from "../moves/AllyDefScalingMove";
-import { BreakScreensMove } from "../moves/BreakScreensMove";
 import { ConditionalAutoBoostMove } from "../moves/ConditionalAutoBoostMove";
 import { ConditionalInputBoostMove } from "../moves/ConditionalInputBoostMove";
 import { DesperationMove } from "../moves/DesperationMove";
 import { DifferentAttackingStatMove } from "../moves/DifferentAttackStatMove";
 import { DifferentDefenseStatMove } from "../moves/DifferentDefenseStatMove";
-import { DoubleCritMove } from "../moves/DoubleCritMove";
 import { ExtraEffectiveMove } from "../moves/ExtraEffectiveMove";
 import { ExtraTypeMove } from "../moves/ExtraTypeMove";
 import { FacadeMove } from "../moves/FacadeMove";
 import { FaintedAllyScalingMove } from "../moves/FaintedAllyScalingMove";
+import { FixedDamageMove } from "../moves/FixedDamageMove";
 import { GutCheckMove } from "../moves/GutCheckMove";
 import { HeightUserScalingMove } from "../moves/HeightUserScalingMove";
-import { HitsFliersMove } from "../moves/HitsFliersMove";
 import { HPScalingMove } from "../moves/HPScalingMove";
 import { IgnoreStatMove } from "../moves/IgnoreStatMove";
 import { MultiHitMove } from "../moves/MultiHitMove";
@@ -68,21 +72,20 @@ import { Tribe } from "./Tribe";
 
 const data = loadedData as LoadedDataJson;
 const moveSubclasses = [
+    ConditionalCritMove,
     AllyDefScalingMove,
-    BreakScreensMove,
     ConditionalAutoBoostMove,
     ConditionalInputBoostMove,
     DesperationMove,
     DifferentAttackingStatMove,
     DifferentDefenseStatMove,
-    DoubleCritMove,
     ExtraEffectiveMove,
+    FixedDamageMove,
     ExtraTypeMove,
     FacadeMove,
     FaintedAllyScalingMove,
     GutCheckMove,
     HeightUserScalingMove,
-    HitsFliersMove,
     HPScalingMove,
     IgnoreStatMove,
     MultiHitMove,
@@ -99,6 +102,24 @@ const moveSubclasses = [
     VariableTypeMove,
     WeightTargetScalingMove,
     WeightUserScalingMove,
+];
+const moveModifiers: Array<{ moveCodes: string[]; apply: (move: Move) => void }> = [
+    {
+        moveCodes: [
+            "AlwaysHits",
+            "FrostbiteTargetAlwaysHitsInHail",
+            "HitTwoToFiveTimesAlwaysHits",
+            "NumbTargetAlwaysHitsInRainstormHitsTargetInSky",
+            "RemoveProtections",
+            "RemoveProtectionsBypassSubstituteAlwaysHits",
+            "TwoTurnAttackInvulnerableRemoveProtections",
+        ],
+        apply: (m) => { m.bypassesProtect = true; },
+    },
+    { moveCodes: ["RemoveScreens"], apply: (m) => { m.ignoresScreens = true; } },
+    { moveCodes: ["HitsTargetInSkyGroundsTarget"], apply: (m) => { m.hitsFliers = true; } },
+    { moveCodes: ["DoubleDamageOnCrit"], apply: (m) => { m.criticalMultiplier = 3; } },
+    { moveCodes: ["IgnoreTargetAbility"], apply: (m) => { m.ignoresTargetAbility = true; } },
 ];
 const itemSubclasses = [
     CategoryBoostingItem,
@@ -120,8 +141,12 @@ const abilitySubclasses = [
     AttackMultBoostAbility,
     BaseDamageBoostAbility,
     CancelWeatherAbility,
+    ConditionalCritAbility,
+    DefensiveDamageAbility,
+    DisguiseAbility,
     ExtraTypeAbility,
     FasterBoostDamageAbility,
+    OffensiveDamageBoostAbility,
     ParanoidAbility,
     STABBoostAbility,
     StatModifyAbility,
@@ -131,6 +156,7 @@ const abilitySubclasses = [
     TypeImmunityWeaknessAbility,
     TypeResistAbility,
     TypeWeaknessAbility,
+    WeatherStatAbility,
 ];
 
 function fromLoaded<L extends LoadedData<L>, T>(load: Record<string, L>, ctor: new (l: L) => T): Record<string, T> {
@@ -199,7 +225,13 @@ Ability.NULL = new Ability();
 
 TectonicData.moves = fromLoadedMapped(data.moves, (x) => {
     const subclass = moveSubclasses.find((sc) => sc.moveCodes.includes(x.functionCode));
-    return subclass ? new subclass(x) : new Move(x);
+    const move = subclass ? new subclass(x) : new Move(x);
+    for (const mod of moveModifiers) {
+        if (mod.moveCodes.includes(x.functionCode)) {
+            mod.apply(move);
+        }
+    }
+    return move;
 });
 Move.NULL = new Move();
 // these are some hefty filters potentially used a few times so may as well cache 'em

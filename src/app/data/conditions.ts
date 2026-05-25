@@ -21,3 +21,10 @@ export const weatherConditions = [
 ] as const;
 
 export type WeatherCondition = (typeof weatherConditions)[number] | "None";
+
+export const sunWeathers: WeatherCondition[] = ["Sunshine", "Harsh Sunlight"];
+export const rainWeathers: WeatherCondition[] = ["Rainstorm", "Heavy Rain"];
+export const sandWeathers: WeatherCondition[] = ["Sandstorm"];
+export const hailWeathers: WeatherCondition[] = ["Hail"];
+export const eclipseWeathers: WeatherCondition[] = ["Eclipse", "Ring Eclipse"];
+export const moonWeathers: WeatherCondition[] = ["Moonglow", "Blood Moon"];

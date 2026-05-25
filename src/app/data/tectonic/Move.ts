@@ -108,6 +108,12 @@ export class Move {
         return this.functionCode.includes("BindTarget");
     }
 
+    bypassesProtect: boolean = false;
+    hitsFliers: boolean = false;
+    ignoresScreens: boolean = false;
+    ignoresTargetAbility: boolean = false;
+    criticalMultiplier: number = 1.5;
+
     public getTargetPositions(): boolean[][] {
         // Format is [[Foe, Foe], [User, Ally]]
         switch (this.target) {
@@ -169,6 +175,18 @@ export class Move {
         return this.bp;
     }
 
+    // Override in subclasses to bypass the damage formula and return a fixed damage value
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public getFixedDamage(user: PartyPokemon, target: PartyPokemon, battleState: BattleState, customVar: unknown): number | null {
+        return null;
+    }
+
+    // Override in subclasses to provide context-aware default values for customVar
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public getDefaultCustomVar(user: PartyPokemon, target: PartyPokemon, battleState: BattleState): unknown {
+        return undefined;
+    }
+
     // to be extended by subclasses
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public getType(user: PartyPokemon, battleState: BattleState): PokemonType {
@@ -195,9 +213,7 @@ export class Move {
         return category === "Physical" ? "defense" : "spdef";
     }
 
-    public ignoresScreens(): boolean {
-        return false;
-    }
+
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public getDamageCategory(move: MoveData, user: PartyPokemon, target: PartyPokemon): "Physical" | "Special" {
@@ -221,9 +237,11 @@ export class Move {
         return "player";
     }
 
-    public getCriticalMultiplier(): number {
-        return 1.5;
+    public forceCrit(user: PartyPokemon, target: PartyPokemon, battleState: BattleState): boolean {
+        return user.getActiveAbilities().some((a) => a.forceCrit(user, target, battleState));
     }
+
+
 
     public getCategoryImgSrc(): string {
         return Move.getMoveCategoryImgSrc(this.category);

@@ -1,6 +1,7 @@
 import { MoveData } from "@/app/damagecalc/components/MoveCard";
 import { Side } from "@/app/damagecalc/damageCalc";
 import { TwoItemAbility } from "../abilities/TwoItemAbility";
+import { BattleState } from "../battleState";
 import { StatusEffect, VolatileStatusEffect, volatileStatusEffects } from "../conditions";
 import { FragileLocketItem } from "../items/FragileLocketItem";
 import { TypeChangingItem } from "../items/TypeChangingItem";
@@ -28,6 +29,7 @@ export class PartyPokemon {
     statSteps: Stats;
     statusEffect: StatusEffect;
     volatileStatusEffects: Record<VolatileStatusEffect, boolean>;
+    abilityCustomVar: unknown;
 
     constructor(data?: Partial<PartyPokemon>) {
         this.species = data?.species || Pokemon.NULL;
@@ -44,6 +46,7 @@ export class PartyPokemon {
         this.volatileStatusEffects =
             data?.volatileStatusEffects ||
             (Object.fromEntries(volatileStatusEffects.map((e) => [e, false])) as Record<VolatileStatusEffect, boolean>);
+        this.abilityCustomVar = data?.abilityCustomVar;
     }
 
     public hasFragileLocket(): boolean {
@@ -78,7 +81,7 @@ export class PartyPokemon {
         return stats;
     }
 
-    public getStats(move?: MoveData, side?: Side): Stats {
+    public getStats(move?: MoveData, side?: Side, battleState?: BattleState): Stats {
         const activeAbilities = this.getActiveAbilities();
         const stylish = activeAbilities.some((a) => a.id === "STYLISH");
         const accumulation = activeAbilities.some((a) => a.id === "ACCUMULATION");
@@ -137,7 +140,7 @@ export class PartyPokemon {
         }
 
         for (const ability of this.getActiveAbilities()) {
-            calculatedStats = ability.modifyStats(calculatedStats);
+            calculatedStats = ability.modifyStats(calculatedStats, battleState);
         }
 
         return calculatedStats;

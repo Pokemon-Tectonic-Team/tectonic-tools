@@ -13,8 +13,10 @@ function punishStatus(status: StatusEffect) {
 
 const moveConditions: Record<string, ConditionFunction> = {
     DoubleDamageNoItem: (user: PartyPokemon) => user.items.filter((i) => !isNull(i)).length === 0,
-    DoubleDamageFaster: (user: PartyPokemon, target: PartyPokemon) => user.getStats().speed > target.getStats().speed,
-    InertiaShock: (user: PartyPokemon, target: PartyPokemon) => user.getStats().speed > target.getStats().speed,
+    DoubleDamageFaster: (user: PartyPokemon, target: PartyPokemon, battleState: BattleState) =>
+        user.getStats(undefined, undefined, battleState).speed > target.getStats(undefined, undefined, battleState).speed,
+    InertiaShock: (user: PartyPokemon, target: PartyPokemon, battleState: BattleState) =>
+        user.getStats(undefined, undefined, battleState).speed > target.getStats(undefined, undefined, battleState).speed,
     RemovesTargetItemDamageBoost50Percent: (_: PartyPokemon, target: PartyPokemon) =>
         target.items.filter((i) => !isNull(i)).length > 0,
     DoubleDamageTargetStatused: (_: PartyPokemon, target: PartyPokemon) => target.statusEffect !== "None", // Does Hex interact with Volatile SEs?

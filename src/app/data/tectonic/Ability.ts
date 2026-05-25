@@ -11,6 +11,8 @@ export class Ability {
     description: string = "";
     flags: string[] = [];
     isSignature: boolean = false;
+    needsInput: boolean = false;
+    customVarName: string = "";
 
     static NULL: Ability = null!;
 
@@ -29,17 +31,28 @@ export class Ability {
         return 1;
     }
 
-    public modifyStats(stats: Stats) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public modifyStats(stats: Stats, battleState?: BattleState) {
         return stats;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public movePowerMultiplier(move: MoveData, user: PartyPokemon, target: PartyPokemon): number {
+    public forceCrit(user: PartyPokemon, target: PartyPokemon, battleState: BattleState): boolean {
+        return false;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public movePowerMultiplier(move: MoveData, user: PartyPokemon, target: PartyPokemon, battleState: BattleState): number {
         return 1;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public attackMultiplier(move: MoveData, user: PartyPokemon, battleState: BattleState): number {
+        return 1;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public defensiveMultiplier(move: MoveData, user: PartyPokemon, target: PartyPokemon, battleState: BattleState, typeEffectMult: number): number {
         return 1;
     }
 

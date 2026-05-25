@@ -1,6 +1,7 @@
 import { WeatherCondition } from "./conditions";
 
 export interface SideState {
+    protecting: boolean;
     reflect: boolean;
     lightScreen: boolean;
     auroraVeil: boolean;
@@ -8,6 +9,7 @@ export interface SideState {
 }
 
 export const nullSideState: SideState = {
+    protecting: false,
     reflect: false,
     lightScreen: false,
     auroraVeil: false,

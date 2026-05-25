@@ -99,6 +99,11 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData, battleStat
         }
     }
 
+    // Move-level mold breaking (e.g. Moongeist Beam, Sunsteel Strike)
+    if (atk.move?.ignoresTargetAbility) {
+        defAbilityCalc = 1.0;
+    }
+
     const atkMove = atk.move;
     if (atkMove && atkMove.isAttackingMove()) {
         if (atkMove instanceof ExtraEffectiveMove) {

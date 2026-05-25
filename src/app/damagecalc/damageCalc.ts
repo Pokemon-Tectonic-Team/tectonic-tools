@@ -34,6 +34,19 @@ export function calculateDamage(
     //     return;
     // }
 
+    // Protect blocks all damage from moves that don't bypass it
+    if (battleState.sideState.protecting && !move.move.bypassesProtect) {
+        return { damage: 0, percentage: 0, hits: 0, typeEffectMult: 1 };
+    }
+
+    // Fixed damage moves bypass the entire formula
+    const fixedDamage = move.move.getFixedDamage(user, target, battleState, move.customVar);
+    if (fixedDamage !== null) {
+        const hp = target.getStats(move, "opponent", battleState).hp;
+        const percentage = fixedDamage / hp;
+        return { damage: fixedDamage, percentage, hits: Math.ceil(1 / percentage), typeEffectMult: 1 };
+    }
+
     // Calculate base power of move
     const baseDmg = move.move.getPower(user, target, battleState, move.customVar);
 
@@ -42,7 +55,7 @@ export function calculateDamage(
 
     // Calculate the actual damage dealt, and assign it to the damage state for tracking
     const [damage, typeEffectMult] = calculateDamageForHit(move, user, target, baseDmg, battleState);
-    const percentage = damage / target.getStats(move, "opponent").hp;
+    const percentage = damage / target.getStats(move, "opponent", battleState).hp;
     const hits = Math.ceil(1 / percentage);
     if (move.move instanceof MultiHitMove) {
         const minTotal = damage * move.move.minHits;
@@ -54,8 +67,8 @@ export function calculateDamage(
             typeEffectMult,
             minTotal,
             maxTotal,
-            minPercentage: minTotal / target.getStats(move, "opponent").hp,
-            maxPercentage: maxTotal / target.getStats(move, "opponent").hp,
+            minPercentage: minTotal / target.getStats(move, "opponent", battleState).hp,
+            maxPercentage: maxTotal / target.getStats(move, "opponent", battleState).hp,
         };
     }
     return { damage, percentage, hits, typeEffectMult };
@@ -69,7 +82,7 @@ function calculateDamageForHit(
     battleState: BattleState
 ): [number, number] {
     // Get the relevant attacking and defending stat values (after steps)
-    const [attack, defense] = damageCalcStats(move, user, target);
+    const [attack, defense] = damageCalcStats(move, user, target, battleState);
 
     // Calculate all multiplier effects
     const [multipliers, typeEffectMult] = calcDamageMultipliers(move, user, target, battleState);
@@ -127,7 +140,7 @@ function calcBasicDamage(
     return Math.floor(2.0 + (levelMultiplier * baseDamage * userAttackingStat) / targetDefendingStat / 50.0);
 }
 
-function damageCalcStats(move: MoveData, userStats: PartyPokemon, targetStats: PartyPokemon): [number, number] {
+function damageCalcStats(move: MoveData, userStats: PartyPokemon, targetStats: PartyPokemon, battleState: BattleState): [number, number] {
     // Calculate category for adaptive moves
     const trueCategory = move.move.getDamageCategory(move, userStats, targetStats);
 
@@ -151,14 +164,14 @@ function damageCalcStats(move: MoveData, userStats: PartyPokemon, targetStats: P
 
     // attack_step = 0 if target.hasActiveAbility("UNAWARE") && !battle.moldBreaker;
     // TODO: figure out how crits interact with foul play
-    const attack = attacking_stat_holder.getStats(move, "player")[attacking_stat];
+    const attack = attacking_stat_holder.getStats(move, "player", battleState)[attacking_stat];
 
     // Calculate target's defense stat
     const defending_stat_holder = targetStats;
     const defending_stat: Stat = move.move.getDefendingStat(trueCategory);
 
     // defense_step = 0 if user.hasActiveAbility("UNAWARE");
-    const defense = defending_stat_holder.getStats(move, "opponent")[defending_stat];
+    const defense = defending_stat_holder.getStats(move, "opponent", battleState)[defending_stat];
 
     return [attack, defense];
 }
@@ -187,7 +200,7 @@ function pbCalcAbilityDamageMultipliers(
 
     // User or user ally ability effects that alter damage (apply all active abilities for Fragile Locket)
     for (const ability of user.getActiveAbilities()) {
-        multipliers.base_damage_multiplier *= ability.movePowerMultiplier(move, user, target);
+        multipliers.base_damage_multiplier *= ability.movePowerMultiplier(move, user, target, battleState);
         multipliers.attack_multiplier *= ability.attackMultiplier(move, user, battleState);
     }
     // user.eachAlly((b: any) => {
@@ -488,8 +501,7 @@ function pbCalcProtectionsDamageMultipliers(
     multipliers: DamageMultipliers
 ): DamageMultipliers {
     // Aurora Veil, Reflect, Light Screen
-    // TODO: Abilities that ignore screens?
-    if (!move.move.ignoresScreens() && !doesMoveCrit(move, target) /* && !user.ignoreScreens(checkingForAI)*/) {
+    if (!move.move.ignoresScreens && !doesMoveCrit(move, target) /* && !user.ignoreScreens(checkingForAI)*/) {
         if (
             battleState.sideState.auroraVeil ||
             (battleState.sideState.reflect && move.move.getDamageCategory(move, user, target) === "Physical") ||
@@ -722,6 +734,15 @@ function calcDamageMultipliers(
         multipliers = item.defensiveMultiplier(multipliers, move, user, target, battleState, typeEffectMult);
     }
 
+    // Target ability effects that reduce damage (skipped if attacker ignores target ability)
+    const moldBreaking = move.move.ignoresTargetAbility ||
+        user.getActiveAbilities().some((a) => a.flags.includes("MoldBreaking"));
+    if (!moldBreaking) {
+        for (const ability of target.getActiveAbilities()) {
+            multipliers.final_damage_multiplier *= ability.defensiveMultiplier(move, user, target, battleState, typeEffectMult);
+        }
+    }
+
     // TODO: Misc effects
     // if (target.effectActive("DeathMark")) {
     //     multipliers.final_damage_multiplier *= 1.5;
@@ -776,7 +797,7 @@ function calcDamageMultipliers(
     // Critical hits
     if (doesMoveCrit(move, target)) {
         // TODO: Implement moves with increased critical hit damage
-        multipliers.final_damage_multiplier *= move.move.getCriticalMultiplier();
+        multipliers.final_damage_multiplier *= move.move.criticalMultiplier;
     }
 
     // Random variance (What used to be for that)
