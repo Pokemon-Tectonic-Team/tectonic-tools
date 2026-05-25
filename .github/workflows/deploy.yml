@@ -16,6 +16,7 @@ jobs:
                   host: ${{ secrets.AZURE_HOST }}
                   username: ${{ secrets.AZURE_USERNAME }}
                   key: ${{ secrets.AZURE_SSH_KEY }}
+                  script_stop: true
                   script: |
                       # Deploy Production Build
                       cd /var/www/tectonic-prod
