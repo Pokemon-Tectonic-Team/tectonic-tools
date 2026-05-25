@@ -196,7 +196,11 @@ export class Move {
                 return ability.moveType;
             }
         }
-        return this.type;
+        const type = this.type;
+        if (type.id === "FLEX") {
+            return user.types.type1;
+        }
+        return type;
     }
 
     // to be extended by subclasses
