@@ -2,9 +2,47 @@ import { PokePartyEncoding, PokePartyEncodingType } from "@/app/data/pokeparty";
 import { Pokemon } from "@/app/data/tectonic/Pokemon";
 import { TectonicData } from "@/app/data/tectonic/TectonicData";
 import { PartyPokemon } from "@/app/data/types/PartyPokemon";
+import { isNull } from "@/app/data/util";
 import { JSX, useCallback, useEffect, useState } from "react";
 import BasicButton from "./BasicButton";
 import DownloadFileButton from "./DownloadFileButton";
+
+function exportToPBS(party: PartyPokemon[]): string {
+    const lines: string[] = [];
+    for (const mon of party) {
+        if (isNull(mon.species)) continue;
+
+        lines.push(`Pokemon = ${mon.species.id},${mon.level}`);
+
+        const validMoves = mon.moves.filter((m) => !isNull(m));
+        if (validMoves.length > 0) {
+            lines.push(`    Moves = ${validMoves.map((m) => m.id).join(",")}`);
+        }
+
+        const abilities = mon.species.getAbilities(mon.form);
+        const abilityIndex = abilities.findIndex((a) => a.id === mon.ability.id);
+        lines.push(`    AbilityIndex = ${abilityIndex >= 0 ? abilityIndex : 0} # ${mon.ability.name}`);
+
+        const sp = mon.stylePoints;
+        lines.push(`    EV = ${sp.hp},${sp.attacks},${sp.defense},${sp.attacks},${sp.spdef},${sp.speed}`);
+
+        const validItems = mon.items.filter((i) => !isNull(i));
+        if (validItems.length > 0) {
+            lines.push(`    Item = ${validItems.map((i) => i.id).join(",")}`);
+        }
+        if (mon.hasTypeChangingItemAndCanChangeType()) {
+            lines.push(`    ItemType = ${mon.itemType.id}`);
+        }
+
+        if (mon.form !== 0 && mon.form !== -1) {
+            const formId = mon.species.forms[mon.form].formId;
+            if (formId !== 0) {
+                lines.push(`    Form = ${formId}`);
+            }
+        }
+    }
+    return lines.join("\n");
+}
 
 const teamManagementLocalStorageKeyV1 = "TeamManagementLocalStorageKey_V1";
 const pokePartyLocalStorageV1 = "PokePartyLocalStorageKey_V1";
@@ -130,12 +168,20 @@ export default function SavedTeamManager({
                     <BasicButton onClick={() => importTeam(teamCode)}>Import</BasicButton>
                     {exportMons && <BasicButton onClick={exportTeam}>Export</BasicButton>}
                     {TectonicData.isDev && exportMons && (
-                        <DownloadFileButton
-                            filename="teamcode.txt"
-                            generateContent={() => PokePartyEncoding.encode(exportMons!, PokePartyEncodingType.Full)}
-                        >
-                            Export for Tectonic
-                        </DownloadFileButton>
+                        <>
+                            <DownloadFileButton
+                                filename="teamcode.txt"
+                                generateContent={() => PokePartyEncoding.encode(exportMons!, PokePartyEncodingType.Full)}
+                            >
+                                Export for Tectonic
+                            </DownloadFileButton>
+                            <DownloadFileButton
+                                filename="team_pbs.txt"
+                                generateContent={() => exportToPBS(exportMons!)}
+                            >
+                                Export to PBS
+                            </DownloadFileButton>
+                        </>
                     )}
                 </div>
             </div>

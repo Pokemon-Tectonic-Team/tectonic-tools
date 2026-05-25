@@ -1,6 +1,6 @@
 import { MoveData } from "@/app/damagecalc/components/MoveCard";
 import { DamageMultipliers } from "@/app/damagecalc/damageCalc";
-import { LoadedItem } from "@/preload/loadedDataClasses";
+import { LoadedItem } from "@/app/data/loadedDataClasses";
 import { BattleState } from "../battleState";
 import { PartyPokemon } from "../types/PartyPokemon";
 import { Stats } from "./Pokemon";

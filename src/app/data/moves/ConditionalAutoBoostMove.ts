@@ -1,4 +1,4 @@
-import { LoadedMove } from "@/preload/loadedDataClasses";
+import { LoadedMove } from "@/app/data/loadedDataClasses";
 import { BattleState } from "../battleState";
 import { StatusEffect } from "../conditions";
 import { Move } from "../tectonic/Move";

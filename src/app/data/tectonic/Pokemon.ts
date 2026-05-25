@@ -1,4 +1,4 @@
-import { LoadedPokemon, PokemonEvolutionTerms } from "@/preload/loadedDataClasses";
+import { LoadedPokemon, PokemonEvolutionTerms } from "@/app/data/loadedDataClasses";
 import { calculateHP, calculateStat } from "../stats";
 import { TectonicData } from "../tectonic/TectonicData";
 import { NTreeArrayNode, NTreeNode } from "../types/NTreeNode";

@@ -1,5 +1,5 @@
 import { MoveData } from "@/app/damagecalc/components/MoveCard";
-import { LoadedAbility } from "@/preload/loadedDataClasses";
+import { LoadedAbility } from "@/app/data/loadedDataClasses";
 import { BattleState } from "../battleState";
 import { PartyPokemon } from "../types/PartyPokemon";
 import { Stats } from "./Pokemon";
@@ -27,7 +27,7 @@ export class Ability {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public modifiedMatchup(type: PokemonType) {
+    public modifiedMatchup(type: PokemonType, battleState?: BattleState) {
         return 1;
     }
 

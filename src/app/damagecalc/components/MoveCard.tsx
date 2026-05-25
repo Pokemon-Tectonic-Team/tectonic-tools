@@ -107,7 +107,7 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                 className={`flex w-full justify-between items-center p-1 rounded-2xl ${getTypeColorClass(
                     props.moveData.move.getType(props.user, props.battleState),
                     "bg",
-                    "bg"
+                    "bg",
                 )} ${props.moveData.move.isSTAB(props.user) ? "font-bold" : ""} ${
                     props.moveData.move.isSignature ? "text-yellow-300" : ""
                 }`}
@@ -120,7 +120,7 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                     />
                     <ImageFallback
                         src={Move.getMoveCategoryImgSrc(
-                            props.moveData.move.getDamageCategory(props.moveData, props.user, props.target)
+                            props.moveData.move.getDamageCategory(props.moveData, props.user, props.target),
                         )}
                         alt={props.moveData.move.category}
                         title={props.moveData.move.category}
@@ -133,7 +133,7 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                 <div
                     className={`p-1 whitespace-nowrap rounded-xl border-1 border-white/50 ${getColourClassForMult(
                         result.typeEffectMult,
-                        "bg-gray-500"
+                        "bg-gray-500",
                     )} ${getTextColourForMult(result.typeEffectMult)}`}
                 >
                     <div className="flex gap-2 items-center">
@@ -163,18 +163,22 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                         props.user,
                         props.target,
                         props.battleState,
-                        props.moveData.customVar
+                        props.moveData.customVar,
                     )}`}</span>
-                    <span>{`Accuracy: ${props.moveData.move.accuracy}%`}</span>
+                    {props.moveData.move.accuracy > 0 && (
+                        <span>{`Accuracy: ${props.battleState.gravity ? Math.min(props.moveData.move.accuracy * 2, 100) : props.moveData.move.accuracy}%`}</span>
+                    )}
                 </div>
                 <div className="flex flex-col">
                     <span>{`Priority: ${props.moveData.move.priority ?? "None"}`}</span>
-                    <span>{`Flags: ${props.moveData.move.getDisplayFlags(", ")}`}</span>
+                    {props.moveData.move.getDisplayFlags(", ").length > 0 && (
+                        <span>{`Flags: ${props.moveData.move.getDisplayFlags(", ")}`}</span>
+                    )}
                 </div>
                 <div
                     className={`flex flex-col items-end px-2 rounded-xl border-1 border-white/50 ${getColourClassForMult(
                         result.typeEffectMult,
-                        "bg-gray-500"
+                        "bg-gray-500",
                     )} ${getTextColourForMult(result.typeEffectMult)}`}
                 >
                     {getDmgNode()}

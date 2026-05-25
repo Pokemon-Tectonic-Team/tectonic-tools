@@ -1,6 +1,6 @@
 import { Pokemon } from "@/app/data/tectonic/Pokemon";
 import { TectonicData } from "@/app/data/tectonic/TectonicData";
-import { LoadedEncounterMap, LoadedEncounterTable } from "@/preload/loadedDataClasses";
+import { LoadedEncounterMap, LoadedEncounterTable } from "@/app/data/loadedDataClasses";
 
 function printEncChance(table: LoadedEncounterTable, monId: string) {
     const currentEnc = table.encounters.find((e) => e.pokemon === monId);

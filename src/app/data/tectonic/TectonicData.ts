@@ -1,4 +1,4 @@
-import { LoadedData, LoadedDataJson, LoadedEncounterMap } from "@/preload/loadedDataClasses";
+import { LoadedData, LoadedDataJson, LoadedEncounterMap } from "@/app/data/loadedDataClasses";
 import loadedData from "public/data/loadedData.json";
 import { AttackMultBoostAbility } from "../abilities/AttackMultBoostAbility";
 import { BaseDamageBoostAbility } from "../abilities/BaseDamageBoostAbility";
