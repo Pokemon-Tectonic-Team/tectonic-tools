@@ -1,8 +1,7 @@
 import { ExtraTypeAbility } from "./abilities/ExtraTypeAbility";
+import { BattleState } from "./battleState";
 import { ExtraEffectiveMove } from "./moves/ExtraEffectiveMove";
 import { ExtraTypeMove } from "./moves/ExtraTypeMove";
-import { HitsFliersMove } from "./moves/HitsFliersMove";
-import { BattleState } from "./battleState";
 import { Ability } from "./tectonic/Ability";
 import { Move } from "./tectonic/Move";
 import { PokemonType } from "./tectonic/PokemonType";
@@ -29,7 +28,8 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData, battleStat
     let thirdType: PokemonType | null = null;
 
     // HitsFliers moves and Gravity both pierce all Ground-type immunities
-    const piercesGroundImmunity = atk.type.id === "GROUND" && (atk.move instanceof HitsFliersMove || !!battleState?.gravity);
+    const piercesGroundImmunity =
+        atk.type.id === "GROUND" && (!!atk.move?.hitsFliers || !!battleState?.gravity);
 
     let defType1Calc = TectonicData.typeChart[atkType.index][defType1.index];
     if (piercesGroundImmunity) {
@@ -56,10 +56,7 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData, battleStat
 
         if (defAbility instanceof ExtraTypeAbility) {
             const defType3 = defAbility.extraType;
-            if (
-                defType3.id !== defType1.id &&
-                defType3.id !== def.type2?.id
-            ) {
+            if (defType3.id !== defType1.id && defType3.id !== def.type2?.id) {
                 defAbilityCalc *= TectonicData.typeChart[atkType.index][defType3.index];
                 thirdType = defType3;
             }

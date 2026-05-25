@@ -1,4 +1,4 @@
-import { LoadedAbility } from "@/preload/loadedDataClasses";
+import { LoadedAbility } from "@/app/data/loadedDataClasses";
 import { BattleState } from "../battleState";
 import { eclipseWeathers, hailWeathers, moonWeathers, rainWeathers, sandWeathers, sunWeathers, WeatherCondition } from "../conditions";
 import { Ability } from "../tectonic/Ability";

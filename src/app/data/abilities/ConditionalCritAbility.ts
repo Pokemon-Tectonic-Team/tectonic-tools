@@ -1,4 +1,4 @@
-import { LoadedAbility } from "@/preload/loadedDataClasses";
+import { LoadedAbility } from "@/app/data/loadedDataClasses";
 import { BattleState } from "../battleState";
 import { StatusEffect } from "../conditions";
 import { Ability } from "../tectonic/Ability";
