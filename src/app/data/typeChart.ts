@@ -2,6 +2,7 @@ import { ExtraTypeAbility } from "./abilities/ExtraTypeAbility";
 import { ExtraEffectiveMove } from "./moves/ExtraEffectiveMove";
 import { ExtraTypeMove } from "./moves/ExtraTypeMove";
 import { HitsFliersMove } from "./moves/HitsFliersMove";
+import { BattleState } from "./battleState";
 import { Ability } from "./tectonic/Ability";
 import { Move } from "./tectonic/Move";
 import { PokemonType } from "./tectonic/PokemonType";
@@ -22,16 +23,16 @@ interface DefenderData {
 }
 
 // Calculates the best mult value given all attacker moves in that case
-export function calcTypeMatchup(atk: AttackerData, def: DefenderData) {
+export function calcTypeMatchup(atk: AttackerData, def: DefenderData, battleState?: BattleState) {
     const atkType = atk.type;
     const defType1 = def.type1;
     let thirdType: PokemonType | null = null;
 
-    let defType1Calc = TectonicData.typeChart[atkType.index][defType1.index];
+    // HitsFliers moves and Gravity both pierce all Ground-type immunities
+    const piercesGroundImmunity = atk.type.id === "GROUND" && (atk.move instanceof HitsFliersMove || !!battleState?.gravity);
 
-    // certain moves pierce ground immunity
-    // TODO: Revisit this to make it more generic when e.g. gravity is implemented
-    if (atk.move instanceof HitsFliersMove && atk.type.id === "GROUND") {
+    let defType1Calc = TectonicData.typeChart[atkType.index][defType1.index];
+    if (piercesGroundImmunity) {
         defType1Calc = Math.max(defType1Calc, 1);
     }
 
@@ -40,8 +41,7 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData) {
     if (def.type2 !== undefined) {
         const defType2 = def.type2;
         defType2Calc = TectonicData.typeChart[atkType.index][defType2.index];
-        // certain moves pierce ground immunity
-        if (atk.move instanceof HitsFliersMove && atk.type.id === "GROUND") {
+        if (piercesGroundImmunity) {
             defType2Calc = Math.max(defType2Calc, 1);
         }
     }
@@ -49,9 +49,8 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData) {
     // Process all defender abilities (supports Fragile Locket dual abilities)
     for (const defAbility of def.abilities ?? []) {
         // Apply modifiedMatchup from each ability
-        defAbilityCalc *= defAbility.modifiedMatchup(atk.type);
-        // certain moves pierce ground immunity
-        if (defAbilityCalc === 0 && atk.move instanceof HitsFliersMove && atk.type.id === "GROUND") {
+        defAbilityCalc *= defAbility.modifiedMatchup(atk.type, battleState);
+        if (defAbilityCalc === 0 && piercesGroundImmunity) {
             defAbilityCalc = 1;
         }
 
@@ -115,7 +114,7 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData) {
 
         if (atkMove instanceof ExtraTypeMove) {
             // should not recur by a depth of more than 1, since move is no longer defined
-            atkMoveCalc *= calcTypeMatchup({ type: atkMove.extraType, abilities: atkAbilities }, def);
+            atkMoveCalc *= calcTypeMatchup({ type: atkMove.extraType, abilities: atkAbilities }, def, battleState);
         }
     }
 
