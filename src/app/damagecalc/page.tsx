@@ -57,6 +57,7 @@ const PokemonDamageCalculator: NextPage = () => {
     const [opponentSideState, setOpponentSideState] = useState<SideState>(nullSideState);
     const [playerMoveData, setPlayerMoveData] = useState<MoveData[]>([]);
     const [opponentMoveData, setOpponentMoveData] = useState<MoveData[]>([]);
+    const [opponentMonFromTrainer, setOpponentMonFromTrainer] = useState<boolean>(false);
 
     const playerSpeed = playerMon?.getStats(undefined, undefined, getBattleState(nullSideState)).speed;
     const oppSpeed = opponentMon?.getStats(undefined, undefined, getBattleState(nullSideState)).speed;
@@ -115,11 +116,12 @@ const PokemonDamageCalculator: NextPage = () => {
         party: PartyPokemon[],
         setMon: (mon: PartyPokemon) => void,
         setParty: (party: PartyPokemon[]) => void,
+        autoAdd: boolean = true,
     ) {
         const newMon = new PartyPokemon(currentMon);
         const oldIndex = party.findIndex((x) => x == currentMon);
         const newParty = [...party];
-        if (oldIndex == -1 && newParty.length < 6) {
+        if (oldIndex == -1 && autoAdd && newParty.length < 6) {
             // Mon not yet in party and there's room — add it
             newParty.push(newMon);
         } else if (oldIndex > -1) {
@@ -312,6 +314,7 @@ const PokemonDamageCalculator: NextPage = () => {
                                             loadedOpponentParty,
                                             setOpponentMon,
                                             setLoadedOpponentParty,
+                                            !opponentMonFromTrainer,
                                         )
                                     }
                                     onRemove={() => {
@@ -428,6 +431,7 @@ const PokemonDamageCalculator: NextPage = () => {
                                                             }),
                                                         );
                                                         setActiveTrainer(t);
+                                                        setOpponentMonFromTrainer(true);
                                                     }}
                                                     onContextMenu={() => setModalMon(x.pokemon)}
                                                 />
@@ -503,7 +507,7 @@ const PokemonDamageCalculator: NextPage = () => {
                             </div>
                         )}
                         {showOpponentSearch && (
-                            <MiniDexFilter onMon={(mon) => setOpponentMon(new PartyPokemon({ species: mon }))} />
+                            <MiniDexFilter onMon={(mon) => { setOpponentMon(new PartyPokemon({ species: mon })); setOpponentMonFromTrainer(false); }} />
                         )}
                     </Column>
                 </div>
