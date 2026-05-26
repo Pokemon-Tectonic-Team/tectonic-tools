@@ -161,6 +161,8 @@ export class Move {
     }
 
     public isSTAB(mon: PartyPokemon): boolean {
+        // bit of a hack but should always match the pokemon's type
+        if (this.type?.id === "FLEX") return true;
         return (
             this.type &&
             (mon.types.type1 === this.type ||
@@ -177,7 +179,12 @@ export class Move {
 
     // Override in subclasses to bypass the damage formula and return a fixed damage value
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public getFixedDamage(user: PartyPokemon, target: PartyPokemon, battleState: BattleState, customVar: unknown): number | null {
+    public getFixedDamage(
+        user: PartyPokemon,
+        target: PartyPokemon,
+        battleState: BattleState,
+        customVar: unknown,
+    ): number | null {
         return null;
     }
 
@@ -217,8 +224,6 @@ export class Move {
         return category === "Physical" ? "defense" : "spdef";
     }
 
-
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public getDamageCategory(move: MoveData, user: PartyPokemon, target: PartyPokemon): "Physical" | "Special" {
         let trueCategory: "Physical" | "Special";
@@ -244,8 +249,6 @@ export class Move {
     public forceCrit(user: PartyPokemon, target: PartyPokemon, battleState: BattleState): boolean {
         return user.getActiveAbilities().some((a) => a.forceCrit(user, target, battleState));
     }
-
-
 
     public getCategoryImgSrc(): string {
         return Move.getMoveCategoryImgSrc(this.category);
