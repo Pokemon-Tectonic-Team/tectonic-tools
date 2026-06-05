@@ -178,11 +178,14 @@ export class Move {
     }
 
     // Override in subclasses to bypass the damage formula and return a fixed damage value
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public getFixedDamage(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         user: PartyPokemon,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         target: PartyPokemon,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         battleState: BattleState,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         customVar: unknown,
     ): number | null {
         return null;
