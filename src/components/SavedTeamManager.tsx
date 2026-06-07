@@ -1,6 +1,5 @@
 import { PokePartyEncoding, PokePartyEncodingType } from "@/app/data/pokeparty";
 import { Pokemon } from "@/app/data/tectonic/Pokemon";
-import { TectonicData } from "@/app/data/tectonic/TectonicData";
 import { PartyPokemon } from "@/app/data/types/PartyPokemon";
 import { isNull } from "@/app/data/util";
 import { JSX, useCallback, useEffect, useState } from "react";
@@ -88,6 +87,7 @@ export default function SavedTeamManager({
     const [teamCode, setTeamCode] = useState<string>("");
     const [saveTeamName, setSaveTeamName] = useState<string>("");
     const [savedTeamCodes, setSavedTeamCodes] = useState<Record<string, string>>({});
+    const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
 
     function exportTeam() {
         const code = PokePartyEncoding.encode(exportMons!);
@@ -167,23 +167,33 @@ export default function SavedTeamManager({
                 <div className="flex gap-2">
                     <BasicButton onClick={() => importTeam(teamCode)}>Import</BasicButton>
                     {exportMons && <BasicButton onClick={exportTeam}>Export</BasicButton>}
-                    {TectonicData.isDev && exportMons && (
-                        <>
-                            <DownloadFileButton
-                                filename="teamcode.txt"
-                                generateContent={() => PokePartyEncoding.encode(exportMons!, PokePartyEncodingType.Full)}
-                            >
-                                Export for Tectonic
-                            </DownloadFileButton>
-                            <DownloadFileButton
-                                filename="team_pbs.txt"
-                                generateContent={() => exportToPBS(exportMons!)}
-                            >
-                                Export to PBS
-                            </DownloadFileButton>
-                        </>
-                    )}
                 </div>
+                {exportMons && (
+                    <>
+                        <button
+                            className="text-gray-400 text-sm hover:text-gray-200 cursor-pointer"
+                            onClick={() => setShowAdvanced(!showAdvanced)}
+                        >
+                            Advanced {showAdvanced ? "▲" : "▼"}
+                        </button>
+                        {showAdvanced && (
+                            <div className="flex gap-2">
+                                <DownloadFileButton
+                                    filename="teamcode.txt"
+                                    generateContent={() => PokePartyEncoding.encode(exportMons!, PokePartyEncodingType.Full)}
+                                >
+                                    Export for Tectonic
+                                </DownloadFileButton>
+                                <DownloadFileButton
+                                    filename="team_pbs.txt"
+                                    generateContent={() => exportToPBS(exportMons!)}
+                                >
+                                    Export to PBS
+                                </DownloadFileButton>
+                            </div>
+                        )}
+                    </>
+                )}
             </div>
 
             <div className="flex flex-col items-center gap-1">
