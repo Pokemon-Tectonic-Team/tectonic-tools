@@ -11,8 +11,8 @@ export const MAX_LEVEL = 70;
 export const STYLE_POINT_CAP = 50;
 export const MIN_SP = 0;
 export const MAX_SP = 20;
-export const MIN_STEP = -12;
-export const MAX_STEP = +12;
+export const MIN_STEP = -8;
+export const MAX_STEP = +8;
 
 // Byte protocol shift
 const VERSION_MAJOR_SHIFT = 0;
