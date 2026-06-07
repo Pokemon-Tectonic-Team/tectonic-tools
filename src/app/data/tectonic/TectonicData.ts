@@ -31,9 +31,9 @@ import { SuperEffectiveResistItem } from "../items/SuperEffectiveResistItem";
 import { TypeBoostingItem } from "../items/TypeBoostingItem";
 import { TypeChangingItem } from "../items/TypeChangingItem";
 import { WeatherImmuneItem } from "../items/WeatherImmuneItem";
-import { ConditionalCritMove } from "../moves/ConditionalCritMove";
 import { AllyDefScalingMove } from "../moves/AllyDefScalingMove";
 import { ConditionalAutoBoostMove } from "../moves/ConditionalAutoBoostMove";
+import { ConditionalCritMove } from "../moves/ConditionalCritMove";
 import { ConditionalInputBoostMove } from "../moves/ConditionalInputBoostMove";
 import { DesperationMove } from "../moves/DesperationMove";
 import { DifferentAttackingStatMove } from "../moves/DifferentAttackStatMove";
@@ -114,12 +114,34 @@ const moveModifiers: Array<{ moveCodes: string[]; apply: (move: Move) => void }>
             "RemoveProtectionsBypassSubstituteAlwaysHits",
             "TwoTurnAttackInvulnerableRemoveProtections",
         ],
-        apply: (m) => { m.bypassesProtect = true; },
+        apply: (m) => {
+            m.bypassesProtect = true;
+        },
     },
-    { moveCodes: ["RemoveScreens"], apply: (m) => { m.ignoresScreens = true; } },
-    { moveCodes: ["HitsTargetInSkyGroundsTarget"], apply: (m) => { m.hitsFliers = true; } },
-    { moveCodes: ["DoubleDamageOnCrit"], apply: (m) => { m.criticalMultiplier = 3; } },
-    { moveCodes: ["IgnoreTargetAbility"], apply: (m) => { m.ignoresTargetAbility = true; } },
+    {
+        moveCodes: ["RemoveScreens"],
+        apply: (m) => {
+            m.ignoresScreens = true;
+        },
+    },
+    {
+        moveCodes: ["HitsTargetInSkyGroundsTarget"],
+        apply: (m) => {
+            m.hitsFliers = true;
+        },
+    },
+    {
+        moveCodes: ["DoubleDamageOnCrit"],
+        apply: (m) => {
+            m.criticalMultiplier = 3;
+        },
+    },
+    {
+        moveCodes: ["IgnoreTargetAbility"],
+        apply: (m) => {
+            m.ignoresTargetAbility = true;
+        },
+    },
 ];
 const itemSubclasses = [
     CategoryBoostingItem,
@@ -254,8 +276,4 @@ Trainer.NULL = new Trainer();
 
 // Start of post-load population
 Object.entries(TectonicData.forms).forEach(([k, v]) => TectonicData.pokemon[k].addForms([Pokemon.NULL, ...v]));
-if (TectonicData.isDev) {
-    TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket >= 9 && x.pocket <= 13);
-} else {
-    TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket == 5);
-}
+TectonicData.heldItems = Object.values(TectonicData.items).filter((x) => x.pocket >= 9 && x.pocket <= 13);

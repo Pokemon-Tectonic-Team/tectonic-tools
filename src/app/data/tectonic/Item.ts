@@ -16,10 +16,7 @@ export class Item {
     image: string = "";
 
     get isHeldItem() {
-        if (TectonicData.isDev) {
-            return this.pocket >= 9 && this.pocket <= 13;
-        }
-        return this.pocket == 5;
+        return this.pocket >= 9 && this.pocket <= 13;
     }
 
     get isTM() {
