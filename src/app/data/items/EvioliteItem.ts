@@ -7,7 +7,8 @@ export class EvioliteItem extends Item {
     public defensiveMultiplier(
         multipliers: DamageMultipliers,
         move: MoveData,
-        target: PartyPokemon
+        user: PartyPokemon,
+        target: PartyPokemon,
     ): DamageMultipliers {
         if (!target.species.getEvoNode().isLeaf()) {
             multipliers.defense_multiplier *= 1.5;
