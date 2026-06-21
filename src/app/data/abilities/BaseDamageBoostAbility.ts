@@ -48,6 +48,7 @@ const baseDamageBoostValues: Record<string, number> = {
     STRONGJAW: 1.5,
     STONEMANE: 1.2,
     GRIPSTRENGTH: 1.5,
+    FUELHUNGRY: 1.5,
 };
 
 export class BaseDamageBoostAbility extends Ability {
