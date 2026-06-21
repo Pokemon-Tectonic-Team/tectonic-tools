@@ -1,7 +1,7 @@
 import { BattleState } from "@/app/data/battleState";
 import { LoadedAbility } from "@/app/data/loadedDataClasses";
-import { TectonicData } from "../tectonic/TectonicData";
 import { PokemonType } from "../tectonic/PokemonType";
+import { TectonicData } from "../tectonic/TectonicData";
 import { MatchupModifyAbility } from "./MatchupModifyAbility";
 
 const immunityAbilities: Record<string, string[]> = {
@@ -36,6 +36,11 @@ const immunityAbilities: Record<string, string[]> = {
     WINTERINSULATION: ["FIRE", "ELECTRIC"],
     DESICCATE: ["WATER", "GRASS"],
     DECONTAMINATION: ["BUG", "POISON"],
+    MINDLESS: ["PSYCHIC"],
+    HULLHUNGER: ["STEEL"],
+    SWORDSMITHING: ["STEEL"],
+    SHIELDSMITHING: ["STEEL"],
+    DEBUGGER: ["BUG"],
 };
 
 type ImmunityCondition = (battleState?: BattleState) => boolean;
