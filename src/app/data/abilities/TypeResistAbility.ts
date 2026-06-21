@@ -11,6 +11,7 @@ const halfDmgAbilities: Record<string, string[]> = {
     THICKFAT: ["FIRE", "ICE"],
     WATERBUBBLE: ["FIRE"],
     STEAMPOWER: ["WATER"],
+    THERMOSTASIS: ["FIRE", "ICE"],
 };
 
 export class TypeResistAbility extends MatchupModifyAbility {
