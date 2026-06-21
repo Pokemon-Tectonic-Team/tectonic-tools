@@ -24,7 +24,7 @@ export function calculateDamage(
     move: MoveData,
     user: PartyPokemon,
     target: PartyPokemon,
-    battleState: BattleState
+    battleState: BattleState,
 ): DamageResult {
     if (move.move.category === "Status") return { damage: 0, percentage: 0, hits: 0, typeEffectMult: 0 };
 
@@ -79,7 +79,7 @@ function calculateDamageForHit(
     user: PartyPokemon,
     target: PartyPokemon,
     baseDmg: number,
-    battleState: BattleState
+    battleState: BattleState,
 ): [number, number] {
     // Get the relevant attacking and defending stat values (after steps)
     const [attack, defense] = damageCalcStats(move, user, target, battleState);
@@ -121,7 +121,7 @@ function calcDamageWithMultipliers(
     attack: number,
     defense: number,
     userLevel: number,
-    multipliers: DamageMultipliers
+    multipliers: DamageMultipliers,
 ): number {
     baseDmg = Math.max(Math.round(baseDmg * multipliers.base_damage_multiplier), 1);
     attack = Math.max(Math.round(attack * multipliers.attack_multiplier), 1);
@@ -133,14 +133,19 @@ function calcBasicDamage(
     baseDamage: number,
     attackerLevel: number,
     userAttackingStat: number,
-    targetDefendingStat: number
+    targetDefendingStat: number,
 ): number {
     const pseudoLevel = 15.0 + attackerLevel / 2.0;
     const levelMultiplier = 2.0 + 0.4 * pseudoLevel;
     return Math.floor(2.0 + (levelMultiplier * baseDamage * userAttackingStat) / targetDefendingStat / 50.0);
 }
 
-function damageCalcStats(move: MoveData, userStats: PartyPokemon, targetStats: PartyPokemon, battleState: BattleState): [number, number] {
+function damageCalcStats(
+    move: MoveData,
+    userStats: PartyPokemon,
+    targetStats: PartyPokemon,
+    battleState: BattleState,
+): [number, number] {
     // Calculate category for adaptive moves
     const trueCategory = move.move.getDamageCategory(move, userStats, targetStats);
 
@@ -181,7 +186,7 @@ function pbCalcAbilityDamageMultipliers(
     user: PartyPokemon,
     target: PartyPokemon,
     battleState: BattleState,
-    multipliers: DamageMultipliers
+    multipliers: DamageMultipliers,
 ): DamageMultipliers {
     // Global abilities
     // if (
@@ -255,10 +260,19 @@ function applySunDebuff(move: MoveData, user: PartyPokemon, battleState: BattleS
         return false;
     }
     // Check all active abilities for weather synergy (supports Fragile Locket)
-    if (user.getActiveAbilities().some((a) => a.flags.includes("SunshineSynergy") || a.flags.includes("AllWeatherSynergy"))) {
+    if (
+        user
+            .getActiveAbilities()
+            .some((a) => a.flags.includes("SunshineSynergy") || a.flags.includes("AllWeatherSynergy"))
+    ) {
         return false;
     }
-    if (user.types.type1.id === "FIRE" || user.types.type2?.id === "FIRE" || user.types.type1.id === "GRASS" || user.types.type2?.id === "GRASS") {
+    if (
+        user.types.type1.id === "FIRE" ||
+        user.types.type2?.id === "FIRE" ||
+        user.types.type1.id === "GRASS" ||
+        user.types.type2?.id === "GRASS"
+    ) {
         return false;
     }
     if (["FIRE", "GRASS"].includes(move.move.getType(user, battleState).id)) {
@@ -272,10 +286,19 @@ function applyRainDebuff(move: MoveData, user: PartyPokemon, battleState: Battle
         return false;
     }
     // Check all active abilities for weather synergy (supports Fragile Locket)
-    if (user.getActiveAbilities().some((a) => a.flags.includes("RainstormSynergy") || a.flags.includes("AllWeatherSynergy"))) {
+    if (
+        user
+            .getActiveAbilities()
+            .some((a) => a.flags.includes("RainstormSynergy") || a.flags.includes("AllWeatherSynergy"))
+    ) {
         return false;
     }
-    if (user.types.type1.id === "WATER" || user.types.type2?.id === "WATER" || user.types.type1.id === "ELECTRIC" || user.types.type2?.id === "ELECTRIC") {
+    if (
+        user.types.type1.id === "WATER" ||
+        user.types.type2?.id === "WATER" ||
+        user.types.type1.id === "ELECTRIC" ||
+        user.types.type2?.id === "ELECTRIC"
+    ) {
         return false;
     }
 
@@ -290,7 +313,7 @@ function pbCalcWeatherDamageMultipliers(
     user: PartyPokemon,
     target: PartyPokemon,
     battleState: BattleState,
-    multipliers: DamageMultipliers
+    multipliers: DamageMultipliers,
 ): DamageMultipliers {
     const weather = battleState.weather;
     const type = move.move.getType(user, battleState).id;
@@ -380,7 +403,7 @@ function pbCalcStatusesDamageMultipliers(
     move: MoveData,
     user: PartyPokemon,
     target: PartyPokemon,
-    multipliers: DamageMultipliers
+    multipliers: DamageMultipliers,
 ): DamageMultipliers {
     // TODO: Handle abilities
     // const toil = battle.pbCheckOpposingAbility("TOILANDTROUBLE", user.index);
@@ -498,10 +521,13 @@ function pbCalcProtectionsDamageMultipliers(
     user: PartyPokemon,
     target: PartyPokemon,
     battleState: BattleState,
-    multipliers: DamageMultipliers
+    multipliers: DamageMultipliers,
 ): DamageMultipliers {
     // Aurora Veil, Reflect, Light Screen, Sanctuary
-    if (!move.move.ignoresScreens && !doesMoveCrit(move, target, battleState) /* && !user.ignoreScreens(checkingForAI)*/) {
+    if (
+        !move.move.ignoresScreens &&
+        !doesMoveCrit(move, target, battleState) /* && !user.ignoreScreens(checkingForAI)*/
+    ) {
         if (
             battleState.sideState.auroraVeil ||
             (battleState.sideState.reflect && move.move.getDamageCategory(move, user, target) === "Physical") ||
@@ -552,7 +578,7 @@ function pbCalcTypeBasedDamageMultipliers(
     user: PartyPokemon,
     target: PartyPokemon,
     battleState: BattleState,
-    multipliers: DamageMultipliers
+    multipliers: DamageMultipliers,
 ): [DamageMultipliers, number] {
     let stabActive = false;
     // TODO: handle abilities
@@ -566,7 +592,7 @@ function pbCalcTypeBasedDamageMultipliers(
     //     stabActive = anyPartyMemberHasType;
     // } else {
     const type = move.move.getType(user, battleState);
-    stabActive = move.move.isSTAB(user);
+    stabActive = move.move.isSTAB(user, battleState);
 
     //}
     // TODO: Handle curses
@@ -591,7 +617,7 @@ function pbCalcTypeBasedDamageMultipliers(
     const effectiveness = calcTypeMatchup(
         { type: type, move: move.move, abilities: user.getActiveAbilities() },
         { type1: target.types.type1, type2: target.types.type2, abilities: target.getActiveAbilities() },
-        battleState
+        battleState,
     );
     multipliers.final_damage_multiplier *= effectiveness;
 
@@ -711,7 +737,7 @@ function calcDamageMultipliers(
     move: MoveData,
     user: PartyPokemon,
     target: PartyPokemon,
-    battleState: BattleState
+    battleState: BattleState,
 ): [DamageMultipliers, number] {
     let multipliers: DamageMultipliers = {
         attack_multiplier: 1,
@@ -739,11 +765,17 @@ function calcDamageMultipliers(
     }
 
     // Target ability effects that reduce damage (skipped if attacker ignores target ability)
-    const moldBreaking = move.move.ignoresTargetAbility ||
-        user.getActiveAbilities().some((a) => a.flags.includes("MoldBreaking"));
+    const moldBreaking =
+        move.move.ignoresTargetAbility || user.getActiveAbilities().some((a) => a.flags.includes("MoldBreaking"));
     if (!moldBreaking) {
         for (const ability of target.getActiveAbilities()) {
-            multipliers.final_damage_multiplier *= ability.defensiveMultiplier(move, user, target, battleState, typeEffectMult);
+            multipliers.final_damage_multiplier *= ability.defensiveMultiplier(
+                move,
+                user,
+                target,
+                battleState,
+                typeEffectMult,
+            );
         }
     }
 

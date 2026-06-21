@@ -160,14 +160,15 @@ export class Move {
         }
     }
 
-    public isSTAB(mon: PartyPokemon): boolean {
+    public isSTAB(mon: PartyPokemon, battleState: BattleState): boolean {
         // bit of a hack but should always match the pokemon's type
         if (this.type?.id === "FLEX") return true;
+        const moveType = this.getType(mon, battleState);
         return (
-            this.type &&
-            (mon.types.type1 === this.type ||
-                mon.types.type2 === this.type ||
-                mon.getActiveAbilities().some((a) => a.extraType?.id === this.type.id))
+            moveType &&
+            (mon.types.type1 === moveType ||
+                mon.types.type2 === moveType ||
+                mon.getActiveAbilities().some((a) => a.extraType?.id === moveType.id))
         );
     }
 

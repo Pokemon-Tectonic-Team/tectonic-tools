@@ -33,7 +33,12 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
 
     const crit = !forcesNoCrit && (manualCrit || forcesCrit);
     props.moveData.criticalHit = manualCrit;
-    const result = calculateDamage({ ...props.moveData, criticalHit: crit }, props.user, props.target, props.battleState);
+    const result = calculateDamage(
+        { ...props.moveData, criticalHit: crit },
+        props.user,
+        props.target,
+        props.battleState,
+    );
 
     function getDmgNode() {
         if (result.minTotal && result.minPercentage && result.maxTotal && result.maxPercentage) {
@@ -60,7 +65,8 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
     function getCustomVarInput(): ReactNode {
         if (props.moveData.move.customVarType === "number") {
             if (customInput === undefined) {
-                const defaultVal = props.moveData.move.getDefaultCustomVar(props.user, props.target, props.battleState) ?? 0;
+                const defaultVal =
+                    props.moveData.move.getDefaultCustomVar(props.user, props.target, props.battleState) ?? 0;
                 setCustomInput(defaultVal);
                 props.moveData.customVar = defaultVal;
             }
@@ -110,7 +116,7 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                     props.moveData.move.getType(props.user, props.battleState),
                     "bg",
                     "bg",
-                )} ${props.moveData.move.isSTAB(props.user) ? "font-bold" : ""} ${
+                )} ${props.moveData.move.isSTAB(props.user, props.battleState) ? "font-bold" : ""} ${
                     props.moveData.move.isSignature ? "text-yellow-300" : ""
                 }`}
                 title={props.moveData.move.description}
