@@ -24,7 +24,7 @@ function exportToPBS(party: PartyPokemon[]): string {
 
         const sp = mon.stylePoints;
         if (!mon.spEquals(defaultStylePoints)) {
-            lines.push(`    EV = ${sp.hp},${sp.attacks},${sp.defense},${sp.attacks},${sp.spdef},${sp.speed}`);
+            lines.push(`    EV = ${sp.hp},${sp.attacks},${sp.defense},${sp.speed},${sp.attacks},${sp.spdef}`);
         }
 
         const validItems = mon.items.filter((i) => !isNull(i));
