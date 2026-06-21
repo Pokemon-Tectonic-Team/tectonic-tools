@@ -134,6 +134,10 @@ export default function SavedTeamManager({
     }
 
     function deleteTeam() {
+        if (!confirm(`Are you sure you want to delete the saved team "${saveTeamName}"?`)) {
+            return;
+        }
+
         const newCodes = { ...savedTeamCodes };
         delete newCodes[saveTeamName];
 
