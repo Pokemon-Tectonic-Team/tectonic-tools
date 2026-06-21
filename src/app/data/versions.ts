@@ -1,7 +1,4 @@
 import versions from "public/data/versions.json";
-import { TectonicData } from "./tectonic/TectonicData";
-
-export const version = TectonicData.version;
 
 type IndexMap = Record<string, number>;
 
