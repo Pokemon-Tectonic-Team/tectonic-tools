@@ -1,6 +1,6 @@
 import { PokePartyEncoding, PokePartyEncodingType } from "@/app/data/pokeparty";
 import { Pokemon } from "@/app/data/tectonic/Pokemon";
-import { PartyPokemon } from "@/app/data/types/PartyPokemon";
+import { defaultStylePoints, PartyPokemon } from "@/app/data/types/PartyPokemon";
 import { isNull } from "@/app/data/util";
 import { JSX, useCallback, useEffect, useState } from "react";
 import BasicButton from "./BasicButton";
@@ -23,7 +23,9 @@ function exportToPBS(party: PartyPokemon[]): string {
         lines.push(`    AbilityIndex = ${abilityIndex >= 0 ? abilityIndex : 0} # ${mon.ability.name}`);
 
         const sp = mon.stylePoints;
-        lines.push(`    EV = ${sp.hp},${sp.attacks},${sp.defense},${sp.attacks},${sp.spdef},${sp.speed}`);
+        if (!mon.spEquals(defaultStylePoints)) {
+            lines.push(`    EV = ${sp.hp},${sp.attacks},${sp.defense},${sp.attacks},${sp.spdef},${sp.speed}`);
+        }
 
         const validItems = mon.items.filter((i) => !isNull(i));
         if (validItems.length > 0) {
@@ -180,7 +182,9 @@ export default function SavedTeamManager({
                             <div className="flex gap-2">
                                 <DownloadFileButton
                                     filename="teamcode.txt"
-                                    generateContent={() => PokePartyEncoding.encode(exportMons!, PokePartyEncodingType.Full)}
+                                    generateContent={() =>
+                                        PokePartyEncoding.encode(exportMons!, PokePartyEncodingType.Full)
+                                    }
                                 >
                                     Export for Tectonic
                                 </DownloadFileButton>
