@@ -11,10 +11,34 @@ import { MAX_LEVEL } from "../teamExport";
 import { Ability } from "../tectonic/Ability";
 import { Item } from "../tectonic/Item";
 import { Move } from "../tectonic/Move";
-import { Pokemon, Stats, StylePoints, blankStats, defaultStylePoints } from "../tectonic/Pokemon";
+import { DEFAULT_STYLE_VALUE, Pokemon, Stats, blankStats } from "../tectonic/Pokemon";
 import { PokemonType } from "../tectonic/PokemonType";
 import { TectonicData } from "../tectonic/TectonicData";
 import { isNull } from "../util";
+
+export interface StylePoints {
+    hp: number;
+    attacks: number;
+    defense: number;
+    spdef: number;
+    speed: number;
+}
+
+export const defaultStylePoints: StylePoints = {
+    hp: DEFAULT_STYLE_VALUE,
+    attacks: DEFAULT_STYLE_VALUE,
+    defense: DEFAULT_STYLE_VALUE,
+    spdef: DEFAULT_STYLE_VALUE,
+    speed: DEFAULT_STYLE_VALUE,
+};
+
+export const zeroStylePoints: StylePoints = {
+    hp: 0,
+    attacks: 0,
+    defense: 0,
+    spdef: 0,
+    speed: 0,
+};
 
 export class PartyPokemon {
     species: Pokemon;
@@ -171,5 +195,18 @@ export class PartyPokemon {
             });
         }
         return TectonicData.heldItems;
+    }
+
+    public spEquals(other: PartyPokemon | StylePoints): boolean {
+        if (other instanceof PartyPokemon) {
+            other = other.stylePoints;
+        }
+        return (
+            this.stylePoints.hp === other.hp &&
+            this.stylePoints.attacks === other.attacks &&
+            this.stylePoints.defense === other.defense &&
+            this.stylePoints.spdef === other.spdef &&
+            this.stylePoints.speed === other.speed
+        );
     }
 }

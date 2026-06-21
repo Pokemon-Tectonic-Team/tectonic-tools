@@ -1,8 +1,8 @@
 import { Item } from "./tectonic/Item";
 import { Move } from "./tectonic/Move";
-import { Pokemon, Stat, StylePoints } from "./tectonic/Pokemon";
+import { Pokemon, Stat } from "./tectonic/Pokemon";
 import { TectonicData } from "./tectonic/TectonicData";
-import { PartyPokemon } from "./types/PartyPokemon";
+import { PartyPokemon, StylePoints } from "./types/PartyPokemon";
 import { convertBase64UrlToBuffer, convertToBase64Url } from "./util";
 import { VersionMap, versionMaps } from "./versions";
 

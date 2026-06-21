@@ -9,6 +9,9 @@ import { Move } from "./Move";
 import { PokemonType } from "./PokemonType";
 import { Tribe } from "./Tribe";
 
+// this makes more sense in PartyPokemon but we need to avoid a circular dependency
+export const DEFAULT_STYLE_VALUE = 10;
+
 export interface Stats {
     hp: number;
     attack: number;
@@ -27,30 +30,6 @@ export const blankStats: Stats = {
     speed: 0,
     spatk: 0,
     spdef: 0,
-};
-
-export interface StylePoints {
-    hp: number;
-    attacks: number;
-    defense: number;
-    spdef: number;
-    speed: number;
-}
-
-export const defaultStylePoints: StylePoints = {
-    hp: 10,
-    attacks: 10,
-    defense: 10,
-    spdef: 10,
-    speed: 10,
-};
-
-export const zeroStylePoints: StylePoints = {
-    hp: 0,
-    attacks: 0,
-    defense: 0,
-    spdef: 0,
-    speed: 0,
 };
 
 function getterFactory<T extends keyof Pokemon, R>(
@@ -72,7 +51,6 @@ function getterFactory<T extends keyof Pokemon, R>(
 }
 
 const EHP_LEVEL = 50;
-const DEFAULT_STYLE_VALUE = 10;
 
 export class Pokemon {
     id: string = "";

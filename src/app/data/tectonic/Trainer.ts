@@ -1,10 +1,11 @@
 import { LoadedTrainer } from "@/app/data/loadedDataClasses";
 import { TectonicData } from "../tectonic/TectonicData";
+import { StylePoints, defaultStylePoints } from "../types/PartyPokemon";
 import { isNull } from "../util";
 import { Ability } from "./Ability";
 import { Item } from "./Item";
 import { Move } from "./Move";
-import { defaultStylePoints, Pokemon, StylePoints } from "./Pokemon";
+import { Pokemon } from "./Pokemon";
 import { PokemonType } from "./PokemonType";
 
 export interface TrainerPokemon {
@@ -65,7 +66,7 @@ export class Trainer {
                         ([level, move]) =>
                             level <= maxLevel && // get moves learnable up to current level
                             (!signatureMove || move.id !== signatureMove[1].id) && // skip signatures to avoid duplication
-                            level !== 0 // skip evolution moves to avoid duplication
+                            level !== 0, // skip evolution moves to avoid duplication
                     )
                     .sort((a, b) => b[0] - a[0]);
                 while (newMoves.length < 4 && movesUpToLevel.length > 0) {
@@ -156,7 +157,7 @@ export class Trainer {
                 name += " (Tournament)";
             } else {
                 const allVersions = Object.values(TectonicData.trainers).filter(
-                    (t) => t.class === this.class && t.name === this.name && t.extends === undefined
+                    (t) => t.class === this.class && t.name === this.name && t.extends === undefined,
                 );
                 const baseVersion = this.extends !== undefined ? this.extends : this.version;
                 if (baseVersion > 0) {

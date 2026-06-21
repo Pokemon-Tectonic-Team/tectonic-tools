@@ -17,9 +17,9 @@ import {
 } from "@/app/data/teamExport";
 import { Item } from "@/app/data/tectonic/Item";
 import { Move } from "@/app/data/tectonic/Move";
-import { blankStats, Pokemon, Stat, Stats, StylePoints, zeroStylePoints } from "@/app/data/tectonic/Pokemon";
+import { blankStats, Pokemon, Stat, Stats } from "@/app/data/tectonic/Pokemon";
 import { TectonicData } from "@/app/data/tectonic/TectonicData";
-import { PartyPokemon } from "@/app/data/types/PartyPokemon";
+import { PartyPokemon, StylePoints, zeroStylePoints } from "@/app/data/types/PartyPokemon";
 import { isNull, negativeMod, safeKeys } from "@/app/data/util";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Checkbox from "./Checkbox";
@@ -142,7 +142,7 @@ export default function PokemonCardHorizontal({
                     }}
                 >
                     <span onClick={showInfoModal} className="text-xl cursor-pointer">{`${partyMon.species.name} ${
-                        partyMon.nickname ?? partyMon.species.getFormName(partyMon.form)
+                        (partyMon.nickname ?? partyMon.species.getFormName(partyMon.form))
                             ? `(${partyMon.species.getFormName(partyMon.form)})`
                             : ""
                     }`}</span>
@@ -267,7 +267,7 @@ export default function PokemonCardHorizontal({
                                                     </div>
                                                 )}
                                         </div>
-                                    )
+                                    ),
                                 )}
                             </div>
                         </td>
@@ -291,7 +291,7 @@ export default function PokemonCardHorizontal({
                                                 className={`flex flex-col justify-center items-center h-10 cursor-pointer hover:bg-gray-500 border border-white/35 ${getTypeColorClass(
                                                     m.getType(partyMon, nullBattleState),
                                                     "bg",
-                                                    "bg"
+                                                    "bg",
                                                 )}`}
                                                 onClick={() => {
                                                     partyMon.moves[i] = Move.NULL;
