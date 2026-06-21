@@ -4,6 +4,7 @@ import { BattleState } from "@/app/data/battleState";
 import { LoadedMove } from "@/app/data/loadedDataClasses";
 import { MoveTypeChangeAbility } from "../abilities/MoveTypeChangeAbility";
 import { StatusEffect } from "../conditions";
+import { CategoryChangingHerbItem } from "../items/CategoryChangingHerbItem";
 import { TectonicData } from "../tectonic/TectonicData";
 import { PartyPokemon } from "../types/PartyPokemon";
 import { isNull } from "../util";
@@ -226,20 +227,28 @@ export class Move {
         return category === "Physical" ? "defense" : "spdef";
     }
 
+    // overridden by subclasses (e.g. SuperAdaptiveMove) that resolve category differently
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public getDamageCategory(move: MoveData, user: PartyPokemon, target: PartyPokemon): "Physical" | "Special" {
-        let trueCategory: "Physical" | "Special";
+    public getTrueCategory(move: MoveData, user: PartyPokemon, target: PartyPokemon): "Physical" | "Special" {
         if (this.category === "Adaptive") {
             if (user.getStats(move, "player").attack >= user.getStats(move, "player").spatk) {
-                trueCategory = "Physical";
-            } else {
-                trueCategory = "Special";
+                return "Physical";
             }
-        } else if (this.category === "Status") {
+            return "Special";
+        }
+        if (this.category === "Status") {
             // lazy typeguard
             throw new Error("Status moves shouldn't be selectable!");
-        } else {
-            trueCategory = this.category;
+        }
+        return this.category;
+    }
+
+    // applies item-based category changes (e.g. Strength/Intellect Herb) on top of the true category
+    public getDamageCategory(move: MoveData, user: PartyPokemon, target: PartyPokemon): "Physical" | "Special" {
+        const trueCategory = this.getTrueCategory(move, user, target);
+        const herb = user.items.find((i) => i instanceof CategoryChangingHerbItem);
+        if (herb && trueCategory === herb.inputCategory) {
+            return herb.outputCategory;
         }
         return trueCategory;
     }

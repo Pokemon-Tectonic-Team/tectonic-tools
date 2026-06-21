@@ -4,7 +4,7 @@ import { PartyPokemon } from "../types/PartyPokemon";
 
 // targets whichever is lower of phys or spec
 export class SuperAdaptiveMove extends Move {
-    public getDamageCategory(move: MoveData, user: PartyPokemon, target: PartyPokemon): "Physical" | "Special" {
+    public getTrueCategory(move: MoveData, user: PartyPokemon, target: PartyPokemon): "Physical" | "Special" {
         const userStats = user.getStats(move, "player");
         const targetStats = target.getStats(move, "opponent");
         const physEstimate = userStats.attack / targetStats.defense;

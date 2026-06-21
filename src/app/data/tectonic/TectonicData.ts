@@ -19,6 +19,7 @@ import { TypeResistAbility } from "../abilities/TypeResistAbility";
 import { TypeWeaknessAbility } from "../abilities/TypeWeaknessAbility";
 import { WeatherStatAbility } from "../abilities/WeatherStatAbility";
 import { CategoryBoostingItem } from "../items/CategoryBoostingItem";
+import { CategoryChangingHerbItem } from "../items/CategoryChangingHerbItem";
 import { EvioliteItem } from "../items/EvioliteItem";
 import { FlatDamageBoostItem } from "../items/FlatDamageBoostItem";
 import { FragileLocketItem } from "../items/FragileLocketItem";
@@ -144,6 +145,7 @@ const moveModifiers: Array<{ moveCodes: string[]; apply: (move: Move) => void }>
 ];
 const itemSubclasses = [
     CategoryBoostingItem,
+    CategoryChangingHerbItem,
     EvioliteItem,
     FlatDamageBoostItem,
     FragileLocketItem,
