@@ -13,7 +13,6 @@ function isTypeCheck(typeId: string): damageBoostConditionFunction {
 
 const attackMultBoostCondition: Record<string, damageBoostConditionFunction> = {
     PALEOLITHIC: isTypeCheck("ROCK"),
-    HUSTLE: () => true,
     TUNNELMAKER: isTypeCheck("GROUND"),
     STRATAGEM: isTypeCheck("ROCK"),
     TOXICATTITUDE: isTypeCheck("POISON"),
@@ -50,7 +49,7 @@ export class AttackMultBoostAbility extends Ability {
     private boostValue: number;
     constructor(ability: LoadedAbility) {
         super(ability);
-        this.condition = attackMultBoostCondition[ability.key];
+        this.condition = attackMultBoostCondition[ability.key] ?? (() => true);
         this.boostValue = attackMultBoostValues[ability.key];
     }
 
@@ -58,5 +57,5 @@ export class AttackMultBoostAbility extends Ability {
         return this.condition(move, user, battleState) ? this.boostValue : 1;
     }
 
-    static abilityIds = Object.keys(attackMultBoostCondition);
+    static abilityIds = Object.keys(attackMultBoostValues);
 }

@@ -14,9 +14,11 @@ function punishStatus(status: StatusEffect) {
 const moveConditions: Record<string, ConditionFunction> = {
     DoubleDamageNoItem: (user: PartyPokemon) => user.items.filter((i) => !isNull(i)).length === 0,
     DoubleDamageFaster: (user: PartyPokemon, target: PartyPokemon, battleState: BattleState) =>
-        user.getStats(undefined, undefined, battleState).speed > target.getStats(undefined, undefined, battleState).speed,
+        user.getStats(undefined, undefined, battleState).speed >
+        target.getStats(undefined, undefined, battleState).speed,
     InertiaShock: (user: PartyPokemon, target: PartyPokemon, battleState: BattleState) =>
-        user.getStats(undefined, undefined, battleState).speed > target.getStats(undefined, undefined, battleState).speed,
+        user.getStats(undefined, undefined, battleState).speed >
+        target.getStats(undefined, undefined, battleState).speed,
     RemovesTargetItemDamageBoost50Percent: (_: PartyPokemon, target: PartyPokemon) =>
         target.items.filter((i) => !isNull(i)).length > 0,
     DoubleDamageTargetStatused: (_: PartyPokemon, target: PartyPokemon) => target.statusEffect !== "None", // Does Hex interact with Volatile SEs?
@@ -51,6 +53,9 @@ export class ConditionalAutoBoostMove extends Move {
 
     constructor(move: LoadedMove) {
         super(move);
+        // we use a default boost instead of a default condition here because there
+        // are a lot of boosts with the same value
+        // and we need one of the lists to hold every move ID to populate moveCodes
         this.condition = moveConditions[move.functionCode];
         this.boost = moveBoosts[move.functionCode] || 2;
     }

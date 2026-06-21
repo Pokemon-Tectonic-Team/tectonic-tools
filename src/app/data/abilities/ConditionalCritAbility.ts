@@ -23,6 +23,7 @@ export class ConditionalCritAbility extends Ability {
 
     constructor(ability: LoadedAbility) {
         super(ability);
+        // we can't use a default here because conditions is the only list of ability IDs
         this.condition = critConditions[ability.key];
     }
 

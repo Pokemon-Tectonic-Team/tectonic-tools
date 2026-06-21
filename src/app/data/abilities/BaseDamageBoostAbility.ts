@@ -55,7 +55,7 @@ export class BaseDamageBoostAbility extends Ability {
     private boostValue: number;
     constructor(ability: LoadedAbility) {
         super(ability);
-        this.condition = baseDamageBoostConditions[ability.key];
+        this.condition = baseDamageBoostConditions[ability.key] ?? (() => true);
         this.boostValue = baseDamageBoostValues[ability.key];
     }
 
@@ -63,5 +63,5 @@ export class BaseDamageBoostAbility extends Ability {
         return this.condition(move) ? this.boostValue : 1;
     }
 
-    static abilityIds = Object.keys(baseDamageBoostConditions);
+    static abilityIds = Object.keys(baseDamageBoostValues);
 }
