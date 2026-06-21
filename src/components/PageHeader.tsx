@@ -1,3 +1,4 @@
+import { TectonicData } from "@/app/data/tectonic/TectonicData";
 import Link from "next/link";
 import { JSX, ReactNode, SVGProps } from "react";
 import BuilderIcon from "./svg_icons/BuilderIcon";
@@ -43,12 +44,15 @@ export default function PageHeader({ currentPage }: { currentPage: PageType }): 
 
     return (
         <>
-            <nav className="w-full flex justify-around md:justify-center bg-gray-700 border-b border-white/25">
+            <nav className="w-full flex justify-around md:justify-center bg-gray-700 border-b border-white/25 relative">
                 <HeaderButton type={PageType.Home} url="../" icon={HomeIcon} text={"Tectonic Tools"} />
                 <HeaderButton type={PageType.Calc} url="/damagecalc" icon={CalcsIcon} text={"Calculator"} />
                 <HeaderButton type={PageType.Pokedex} url="/pokedex" icon={PokeballIcon} text={"Pokédex"} />
                 <HeaderButton type={PageType.Builder} url="/teambuilder" icon={BuilderIcon} text={"Builder"} />
                 <HeaderButton type={PageType.Tracker} url="/tracker" icon={TrackerIcon} text={"Tracker"} />
+                <span className="hidden md:inline absolute right-4 my-auto self-center text-sm text-white/50">
+                    Tectonic Version: {TectonicData.version}
+                </span>
             </nav>
         </>
     );
