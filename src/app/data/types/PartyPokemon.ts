@@ -14,6 +14,7 @@ import { Move } from "../tectonic/Move";
 import { DEFAULT_STYLE_VALUE, Pokemon, Stats, blankStats } from "../tectonic/Pokemon";
 import { PokemonType } from "../tectonic/PokemonType";
 import { TectonicData } from "../tectonic/TectonicData";
+import { Tribe } from "../tectonic/Tribe";
 import { isNull } from "../util";
 
 export interface StylePoints {
@@ -208,5 +209,12 @@ export class PartyPokemon {
             this.stylePoints.spdef === other.spdef &&
             this.stylePoints.speed === other.speed
         );
+    }
+
+    public getTribes(): Tribe[] {
+        if (this.items.some((i) => i.id === "WILDCARD") || this.ability.id === "FRIENDTOALL") {
+            return Object.values(TectonicData.tribes);
+        }
+        return this.species.tribes;
     }
 }

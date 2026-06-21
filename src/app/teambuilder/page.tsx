@@ -24,10 +24,8 @@ const TeamBuilder: NextPage = () => {
 
     const tribeCounts = Object.fromEntries(Object.values(TectonicData.tribes).map((t) => [t.id, 0]));
     for (const partyMon of party) {
-        for (const tribe of partyMon.items.some((i) => i.id === "WILDCARD")
-            ? Object.keys(TectonicData.tribes)
-            : partyMon.species.tribes.map((t) => t.id)) {
-            tribeCounts[tribe]++;
+        for (const tribe of partyMon.getTribes()) {
+            tribeCounts[tribe.id]++;
         }
     }
 
@@ -99,7 +97,7 @@ const TeamBuilder: NextPage = () => {
                                                             type1: c.types.type1,
                                                             type2: c.types.type2,
                                                             abilities: c.getActiveAbilities(),
-                                                        }
+                                                        },
                                                     )}
                                                 />
                                             ))}

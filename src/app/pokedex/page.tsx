@@ -68,7 +68,7 @@ Object.values(TectonicData.pokemon).forEach((x) =>
         }
 
         itemMons[i.id].push(x);
-    })
+    }),
 );
 const itemDisplayData = Object.values(TectonicData.items)
     .map((i) => {
@@ -199,7 +199,7 @@ const HomeContent = () => {
                                         key={mon.id}
                                         onClick={() => updateSelectedPokemon(mon)}
                                         className={`flex rounded-md px-1 py-2 my-2 cursor-pointer border border-white ${getTypeGradient(
-                                            mon
+                                            mon,
                                         )}`}
                                     >
                                         <td className="flex flex-col justify-between w-30 md:w-35 mr-2 text-base md:text-xl">
@@ -413,8 +413,8 @@ const HomeContent = () => {
                                         itemFilter === "Held"
                                             ? i.item.isHeldItem
                                             : itemFilter == "Wild"
-                                            ? i.wildMons.length > 0
-                                            : true
+                                              ? i.wildMons.length > 0
+                                              : true,
                                     )
                                     .map((i) => (
                                         <tr
