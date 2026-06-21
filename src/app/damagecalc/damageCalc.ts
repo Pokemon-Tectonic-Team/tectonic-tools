@@ -500,8 +500,8 @@ function pbCalcProtectionsDamageMultipliers(
     battleState: BattleState,
     multipliers: DamageMultipliers
 ): DamageMultipliers {
-    // Aurora Veil, Reflect, Light Screen
-    if (!move.move.ignoresScreens && !doesMoveCrit(move, target) /* && !user.ignoreScreens(checkingForAI)*/) {
+    // Aurora Veil, Reflect, Light Screen, Sanctuary
+    if (!move.move.ignoresScreens && !doesMoveCrit(move, target, battleState) /* && !user.ignoreScreens(checkingForAI)*/) {
         if (
             battleState.sideState.auroraVeil ||
             (battleState.sideState.reflect && move.move.getDamageCategory(move, user, target) === "Physical") ||
@@ -515,6 +515,10 @@ function pbCalcProtectionsDamageMultipliers(
             //     } else {
             //         multipliers.final_damage_multiplier *= 2 / 3.0;
             //     }
+        }
+
+        if (battleState.sideState.sanctuary) {
+            multipliers.final_damage_multiplier *= battleState.multiBattle ? 0.8 : 0.75;
         }
 
         // // Repulsion Field
@@ -795,7 +799,7 @@ function calcDamageMultipliers(
     // multipliers.base_damage_multiplier *= Math.max(0, 1.0 - target.dmgResist);
 
     // Critical hits
-    if (doesMoveCrit(move, target)) {
+    if (doesMoveCrit(move, target, battleState)) {
         // TODO: Implement moves with increased critical hit damage
         multipliers.final_damage_multiplier *= move.move.criticalMultiplier;
     }
@@ -838,6 +842,7 @@ function flatDamageReductions(finalCalculatedDamage: number): number {
     return finalCalculatedDamage;
 }
 
-function doesMoveCrit(moveData: MoveData, target: PartyPokemon) {
+function doesMoveCrit(moveData: MoveData, target: PartyPokemon, battleState: BattleState) {
+    if (battleState.sideState.sanctuary) return false;
     return moveData.criticalHit || target.volatileStatusEffects.Jinx;
 }

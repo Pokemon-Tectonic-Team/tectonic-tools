@@ -5,6 +5,7 @@ export interface SideState {
     reflect: boolean;
     lightScreen: boolean;
     auroraVeil: boolean;
+    sanctuary: boolean;
     customDamageMultiplier: number;
 }
 
@@ -13,6 +14,7 @@ export const nullSideState: SideState = {
     reflect: false,
     lightScreen: false,
     auroraVeil: false,
+    sanctuary: false,
     customDamageMultiplier: 1,
 };
 

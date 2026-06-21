@@ -23,13 +23,15 @@ export interface MoveCardProps {
 }
 
 export default function MoveCard(props: MoveCardProps): ReactNode {
+    const forcesNoCrit = props.battleState.sideState.sanctuary;
     const forcesCrit =
-        props.moveData.move.forceCrit(props.user, props.target, props.battleState) ||
-        props.target.volatileStatusEffects.Jinx;
+        !forcesNoCrit &&
+        (props.moveData.move.forceCrit(props.user, props.target, props.battleState) ||
+            props.target.volatileStatusEffects.Jinx);
     const [manualCrit, setManualCrit] = useState<boolean>(props.moveData.criticalHit);
     const [customInput, setCustomInput] = useState<unknown>(props.moveData.customVar);
 
-    const crit = manualCrit || forcesCrit;
+    const crit = !forcesNoCrit && (manualCrit || forcesCrit);
     props.moveData.criticalHit = manualCrit;
     const result = calculateDamage({ ...props.moveData, criticalHit: crit }, props.user, props.target, props.battleState);
 
@@ -144,8 +146,8 @@ export default function MoveCard(props: MoveCardProps): ReactNode {
                                 <input
                                     type="checkbox"
                                     checked={crit}
-                                    className="form-checkbox ml-1"
-                                    disabled={forcesCrit}
+                                    className="form-checkbox ml-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={forcesCrit || forcesNoCrit}
                                     onChange={() => setManualCrit(!manualCrit)}
                                 />
                             </div>

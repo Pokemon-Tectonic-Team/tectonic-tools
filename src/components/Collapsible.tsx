@@ -18,7 +18,7 @@ export default function Collapsible({ children, title }: { children: ReactNode; 
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
             </button>
-            {isExpanded && children}
+            <div className={`overflow-hidden ${isExpanded ? "" : "max-h-0"}`}>{children}</div>
         </div>
     );
 }

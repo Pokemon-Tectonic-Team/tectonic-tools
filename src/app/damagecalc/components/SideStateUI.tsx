@@ -1,52 +1,60 @@
 import { nullSideState, SideState } from "@/app/data/battleState";
 import Checkbox from "@/components/Checkbox";
+import Collapsible from "@/components/Collapsible";
 import { ReactNode, useState } from "react";
 
-const screenStateKeys: Array<keyof SideState> = ["reflect", "lightScreen", "auroraVeil"];
+const screenStateKeys: Array<keyof SideState> = ["reflect", "lightScreen", "auroraVeil", "sanctuary"];
 const screenStateNameMap: Record<string, string> = {
     reflect: "Reflect",
     lightScreen: "Light Screen",
     auroraVeil: "Aurora Veil",
+    sanctuary: "Sanctuary",
 };
 
 export default function SideStateUI({ onUpdate }: { onUpdate: (sideState: SideState) => void }): ReactNode {
     const [sideState, setSideState] = useState<SideState>(nullSideState);
     const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
 
+    const activeScreens = screenStateKeys.filter((k) => sideState[k] as boolean).length;
+
     return (
         <div className="flex flex-col gap-1 mb-1">
-            <div className="flex gap-2">
-                <Checkbox
-                    checked={sideState.protecting}
-                    onChange={() => {
-                        const newState = { ...sideState, protecting: !sideState.protecting };
-                        setSideState(newState);
-                        onUpdate(newState);
-                    }}
-                >
-                    Protect
-                </Checkbox>
-                {screenStateKeys.map((k) => (
-                    <Checkbox
-                        key={k}
-                        checked={sideState[k] as boolean}
-                        onChange={() => {
-                            const newState = { ...sideState, [k]: !sideState[k] };
-                            setSideState(newState);
-                            onUpdate(newState);
-                        }}
-                    >
-                        {screenStateNameMap[k]}
-                    </Checkbox>
-                ))}
-                <button
-                    className="text-sm text-gray-400 hover:text-white"
-                    onClick={() => setShowAdvanced(!showAdvanced)}
-                >
-                    {showAdvanced ? "▼ Advanced" : "▶ Advanced"}
-                </button>
+            <Checkbox
+                checked={sideState.protecting}
+                onChange={() => {
+                    const newState = { ...sideState, protecting: !sideState.protecting };
+                    setSideState(newState);
+                    onUpdate(newState);
+                }}
+            >
+                Protect
+            </Checkbox>
+            <div className="rounded-lg border border-gray-600 bg-gray-800">
+                <Collapsible title={`Screens${activeScreens > 0 ? ` (${activeScreens})` : ""}`}>
+                    <div className="grid grid-cols-2 gap-2 px-4 pb-2">
+                        {screenStateKeys.map((k) => (
+                            <Checkbox
+                                key={k}
+                                checked={sideState[k] as boolean}
+                                onChange={() => {
+                                    const newState = { ...sideState, [k]: !sideState[k] };
+                                    setSideState(newState);
+                                    onUpdate(newState);
+                                }}
+                            >
+                                {screenStateNameMap[k]}
+                            </Checkbox>
+                        ))}
+                    </div>
+                </Collapsible>
             </div>
-            {showAdvanced && (
+            <button
+                className="text-sm text-gray-400 hover:text-white text-left"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+            >
+                {showAdvanced ? "▼ Advanced" : "▶ Advanced"}
+            </button>
+            <div className={`overflow-hidden ${showAdvanced ? "" : "max-h-0"}`}>
                 <div className="flex items-center gap-2">
                     <label className="text-sm">Incoming Damage Multiplier:</label>
                     <input
@@ -62,7 +70,7 @@ export default function SideStateUI({ onUpdate }: { onUpdate: (sideState: SideSt
                         }}
                     />
                 </div>
-            )}
+            </div>
         </div>
     );
 }
