@@ -2,7 +2,6 @@ import { MoveData } from "@/app/damagecalc/components/MoveCard";
 import { Side } from "@/app/damagecalc/damageCalc";
 import { BattleState } from "@/app/data/battleState";
 import { LoadedMove } from "@/app/data/loadedDataClasses";
-import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { MoveTypeChangeAbility } from "../abilities/MoveTypeChangeAbility";
 import { StatusEffect } from "../conditions";
 import { TectonicData } from "../tectonic/TectonicData";
@@ -167,7 +166,7 @@ export class Move {
             this.type &&
             (mon.types.type1 === this.type ||
                 mon.types.type2 === this.type ||
-                mon.getActiveAbilities().some((a) => a instanceof ExtraTypeAbility && a.extraType.id === this.type.id))
+                mon.getActiveAbilities().some((a) => a.extraType?.id === this.type.id))
         );
     }
 

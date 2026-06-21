@@ -26,7 +26,6 @@ import TabContent from "../../components/TabContent";
 import TableCell from "../../components/TableCell";
 import TableHeader from "../../components/TableHeader";
 import TypeChartCell from "../../components/TypeChartCell";
-import { ExtraTypeAbility } from "../data/abilities/ExtraTypeAbility";
 import { TypeImmunityAbility } from "../data/abilities/TypeImmunityAbility";
 import { TypeResistAbility } from "../data/abilities/TypeResistAbility";
 import { Ability } from "../data/tectonic/Ability";
@@ -55,7 +54,7 @@ const filterableAbilities: FilterableAbility[][] = [
         { label: "Moonglow", filter: (a: Ability) => a.hasMoonglowSynergy() },
     ],
     [
-        { label: "Extra Type", filter: (a: Ability) => a instanceof ExtraTypeAbility },
+        { label: "Extra Type", filter: (a: Ability) => a.extraType !== null },
         { label: "Immunity", filter: (a: Ability) => a instanceof TypeImmunityAbility },
         { label: "Resists", filter: (a: Ability) => a instanceof TypeResistAbility },
     ],

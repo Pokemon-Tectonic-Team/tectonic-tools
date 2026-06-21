@@ -13,6 +13,7 @@ export class Ability {
     isSignature: boolean = false;
     needsInput: boolean = false;
     customVarName: string = "";
+    extraType: PokemonType | null = null;
 
     static NULL: Ability = null!;
 

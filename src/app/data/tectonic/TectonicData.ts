@@ -6,7 +6,6 @@ import { CancelWeatherAbility } from "../abilities/CancelWeatherAbility";
 import { ConditionalCritAbility } from "../abilities/ConditionalCritAbility";
 import { DefensiveDamageAbility } from "../abilities/DefensiveDamageAbility";
 import { DisguiseAbility } from "../abilities/DisguiseAbility";
-import { ExtraTypeAbility } from "../abilities/ExtraTypeAbility";
 import { FasterBoostDamageAbility } from "../abilities/FasterBoostDamageAbility";
 import { OffensiveDamageBoostAbility } from "../abilities/OffensiveDamageBoostAbility";
 import { ParanoidAbility } from "../abilities/ParanoidAbility";
@@ -166,7 +165,6 @@ const abilitySubclasses = [
     ConditionalCritAbility,
     DefensiveDamageAbility,
     DisguiseAbility,
-    ExtraTypeAbility,
     FasterBoostDamageAbility,
     OffensiveDamageBoostAbility,
     ParanoidAbility,
@@ -179,6 +177,23 @@ const abilitySubclasses = [
     TypeResistAbility,
     TypeWeaknessAbility,
     WeatherStatAbility,
+];
+
+const extraTypeAbilities: Record<string, string> = {
+    HAUNTED: "GHOST",
+    INFECTED: "GRASS",
+    RUSTWRACK: "STEEL",
+    SLUGGISH: "BUG",
+    UNIDENTIFIED: "MUTANT",
+};
+
+const abilityModifiers: Array<{ abilityIds: string[]; apply: (ability: Ability) => void }> = [
+    {
+        abilityIds: Object.keys(extraTypeAbilities),
+        apply: (a) => {
+            a.extraType = TectonicData.types[extraTypeAbilities[a.id]];
+        },
+    },
 ];
 
 function fromLoaded<L extends LoadedData<L>, T>(load: Record<string, L>, ctor: new (l: L) => T): Record<string, T> {
@@ -241,7 +256,13 @@ TectonicData.realTypes = Object.values(TectonicData.types).filter((t) => t.isRea
 // Start of janky loading, not seen otherwise to users of this data
 TectonicData.abilities = fromLoadedMapped(data.abilities, (x) => {
     const subclass = abilitySubclasses.find((sc) => sc.abilityIds.includes(x.key));
-    return subclass ? new subclass(x) : new Ability(x);
+    const ability = subclass ? new subclass(x) : new Ability(x);
+    for (const mod of abilityModifiers) {
+        if (mod.abilityIds.includes(x.key)) {
+            mod.apply(ability);
+        }
+    }
+    return ability;
 });
 Ability.NULL = new Ability();
 

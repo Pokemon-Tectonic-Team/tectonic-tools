@@ -1,4 +1,3 @@
-import { ExtraTypeAbility } from "./abilities/ExtraTypeAbility";
 import { BattleState } from "./battleState";
 import { ExtraEffectiveMove } from "./moves/ExtraEffectiveMove";
 import { ExtraTypeMove } from "./moves/ExtraTypeMove";
@@ -54,7 +53,7 @@ export function calcTypeMatchup(atk: AttackerData, def: DefenderData, battleStat
             defAbilityCalc = 1;
         }
 
-        if (defAbility instanceof ExtraTypeAbility) {
+        if (defAbility.extraType) {
             const defType3 = defAbility.extraType;
             if (defType3.id !== defType1.id && defType3.id !== def.type2?.id) {
                 defAbilityCalc *= TectonicData.typeChart[atkType.index][defType3.index];
