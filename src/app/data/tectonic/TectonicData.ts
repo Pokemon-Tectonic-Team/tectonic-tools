@@ -22,6 +22,7 @@ import { CategoryBoostingItem } from "../items/CategoryBoostingItem";
 import { CategoryChangingHerbItem } from "../items/CategoryChangingHerbItem";
 import { EvioliteItem } from "../items/EvioliteItem";
 import { FlatDamageBoostItem } from "../items/FlatDamageBoostItem";
+import { FlatDamageNerfItem } from "../items/FlatDamageNerfItem";
 import { FragileLocketItem } from "../items/FragileLocketItem";
 import { LumberAxeItem } from "../items/LumberAxeItem";
 import { StatBoostItem } from "../items/StatBoostItem";
@@ -148,6 +149,7 @@ const itemSubclasses = [
     CategoryChangingHerbItem,
     EvioliteItem,
     FlatDamageBoostItem,
+    FlatDamageNerfItem,
     FragileLocketItem,
     LumberAxeItem,
     StatBoostItem,
