@@ -185,6 +185,8 @@ const extraTypeAbilities: Record<string, string> = {
     RUSTWRACK: "STEEL",
     SLUGGISH: "BUG",
     UNIDENTIFIED: "MUTANT",
+    MOLTENADAPTED: "FIRE",
+    PLASMAADAPTED: "ELECTRIC",
 };
 
 const abilityModifiers: Array<{ abilityIds: string[]; apply: (ability: Ability) => void }> = [
