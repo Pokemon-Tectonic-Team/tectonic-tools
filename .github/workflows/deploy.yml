@@ -20,7 +20,7 @@ jobs:
                   script: |
                       # Deploy Production Build
                       cd /var/www/tectonic-prod
-                      git restore public/data/loadedData.json public/data/pokePartyMappedEncodings.json 2>/dev/null || true
+                      git restore package-lock.json public/data/loadedData.json public/data/pokePartyMappedEncodings.json 2>/dev/null || true
                       git pull origin main
                       npm ci
                       npm run build
@@ -28,7 +28,7 @@ jobs:
 
                       # Deploy Dev Build
                       cd /var/www/tectonic-dev
-                      git restore public/data/loadedData.json public/data/pokePartyMappedEncodings.json 2>/dev/null || true
+                      git restore package-lock.json public/data/loadedData.json public/data/pokePartyMappedEncodings.json 2>/dev/null || true
                       git pull origin main
                       npm ci
                       npm run build-dev
